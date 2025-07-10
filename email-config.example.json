@@ -1,0 +1,26 @@
+{
+  "smtp": {
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "secure": false,
+    "auth": {
+      "user": "your-ai-agent@gmail.com",
+      "pass": "your-app-password"
+    }
+  },
+  "imap": {
+    "host": "imap.gmail.com",
+    "port": 993,
+    "secure": true,
+    "auth": {
+      "user": "your-ai-agent@gmail.com",
+      "pass": "your-app-password"
+    }
+  },
+  "agentEmail": "your-ai-agent@gmail.com",
+  "reportRecipients": [
+    "your-email@company.com",
+    "manager@company.com"
+  ]
+}
+

@@ -1,0 +1,43 @@
+{
+  "name": "vinny-agent",
+  "version": "1.0.0",
+  "description": "Autonomous AI agent for VinSolutions report extraction",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/server.ts",
+    "test": "ts-node test.ts",
+    "test-email-connection": "ts-node test-email-connection.ts",
+    "test-openrouter": "ts-node test-openrouter.ts",
+    "test-mailgun": "ts-node test-mailgun.ts",
+    "test-complete": "ts-node run-complete-test.ts",
+    "test-demo": "ts-node run-demo-test.ts",
+    "autonomous": "ts-node run-autonomous-agent.ts",
+    "start": "node dist/run-autonomous-agent.js"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0",
+    "nodemailer": "^6.9.7",
+    "imap": "^0.8.19",
+    "mailparser": "^3.6.5",
+    "winston": "^3.11.0",
+    "openai": "^4.20.1",
+    "dotenv": "^16.3.1",
+    "axios": "^1.6.2",
+    "form-data": "^4.0.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "@types/nodemailer": "^6.4.14",
+    "@types/imap": "^0.8.40",
+    "@types/mailparser": "^3.4.4",
+    "@types/fs-extra": "^11.0.4",
+    "typescript": "^5.2.2",
+    "ts-node": "^10.9.1"
+  },
+  "keywords": ["ai", "automation", "vinsolutions", "reports", "agent"],
+  "author": "AI Agent System",
+  "license": "MIT"
+}
+

@@ -1,0 +1,25 @@
+{
+  "mailgun": {
+    "apiKey": "your-mailgun-api-key",
+    "domain": "your-domain.com",
+    "fromEmail": "ai-agent@your-domain.com",
+    "fromName": "VinSolutions AI Agent"
+  },
+  "gmail": {
+    "imap": {
+      "host": "imap.gmail.com",
+      "port": 993,
+      "secure": true,
+      "auth": {
+        "user": "your-gmail@gmail.com",
+        "pass": "your-app-password"
+      }
+    },
+    "agentEmail": "your-gmail@gmail.com"
+  },
+  "reportRecipients": [
+    "you@yourcompany.com",
+    "manager@yourcompany.com"
+  ]
+}
+
