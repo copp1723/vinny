@@ -342,77 +342,278 @@ export class CompleteVinSolutionsAgent {
     await this.page!.waitForTimeout(5000);
     await this.takeScreenshot(screenshots, 'dashboard-loaded');
     
-    // Click Insights tab
+    // Step 1: Click Insights tab
     const insightsSelectors = [
+      '//div[@id="tab-insights"]/a',  // Exact XPath from VinSolutionsAgent
+      '#tab-insights a',
       'text=Insights',
-      '[data-testid*="insights"]',
       'a:has-text("Insights")',
+      '[data-testid*="insights"]',
       'button:has-text("Insights")'
     ];
     
+    let insightsClicked = false;
     for (const selector of insightsSelectors) {
-      const count = await this.page!.locator(selector).count();
-      if (count > 0) {
-        await this.page!.click(selector);
-        await this.page!.waitForTimeout(3000);
-        break;
+      try {
+        const element = selector.startsWith('//') 
+          ? this.page!.locator(`xpath=${selector}`)
+          : this.page!.locator(selector);
+          
+        if (await element.isVisible({ timeout: 3000 })) {
+          await element.click();
+          this.logger.info(`Clicked Insights tab using selector: ${selector}`);
+          insightsClicked = true;
+          break;
+        }
+      } catch (e) {
+        continue;
       }
     }
     
-    // Click Reports
-    const reportsSelectors = [
-      'text=Reports',
-      '[data-testid*="reports"]',
-      'a:has-text("Reports")',
-      'button:has-text("Reports")'
+    if (!insightsClicked) {
+      this.logger.warn('Could not click Insights tab, trying Reports directly');
+      
+      // Fallback: Try clicking Reports directly
+      const reportsSelectors = [
+        'text=Reports',
+        '[data-testid*="reports"]',
+        'a:has-text("Reports")',
+        'button:has-text("Reports")'
+      ];
+      
+      for (const selector of reportsSelectors) {
+        const count = await this.page!.locator(selector).count();
+        if (count > 0) {
+          await this.page!.click(selector);
+          await this.page!.waitForTimeout(3000);
+          break;
+        }
+      }
+    } else {
+      await this.page!.waitForTimeout(3000);
+    }
+    
+    await this.takeScreenshot(screenshots, 'after-insights-click');
+    
+    // Step 2: Wait for the reports iframe to load and access Favorites
+    await this.accessFavoritesTab(screenshots);
+  }
+
+  private async accessFavoritesTab(screenshots: string[]): Promise<void> {
+    this.logger.info('Accessing Favorites tab');
+    
+    // Find the report iframe
+    const frameSelectors = [
+      '#reportFrame',
+      'iframe[id="reportFrame"]',
+      'iframe[name="reportFrame"]',
+      'iframe[src*="report"]',
+      'iframe'
     ];
     
-    for (const selector of reportsSelectors) {
-      const count = await this.page!.locator(selector).count();
-      if (count > 0) {
-        await this.page!.click(selector);
-        await this.page!.waitForTimeout(3000);
-        break;
+    let reportFrame = null;
+    for (const selector of frameSelectors) {
+      try {
+        const frameElement = this.page!.locator(selector).first();
+        if (await frameElement.isVisible({ timeout: 5000 })) {
+          reportFrame = this.page!.frameLocator(selector);
+          
+          // Verify frame is accessible
+          const hasContent = await reportFrame.locator('body').isVisible({ timeout: 3000 })
+            .catch(() => false);
+            
+          if (hasContent) {
+            this.logger.info(`Found report frame using selector: ${selector}`);
+            break;
+          }
+        }
+      } catch (e) {
+        continue;
       }
     }
     
-    await this.takeScreenshot(screenshots, 'reports-page');
+    if (reportFrame) {
+      // Click on the Favorites tab inside the iframe
+      const favoritesSelectors = [
+        'text=Favorites',
+        'a:has-text("Favorites")',
+        '.filter-favorites',
+        'a.favorites-link',
+        '[data-testid*="favorites"]'
+      ];
+      
+      let favoritesClicked = false;
+      for (const selector of favoritesSelectors) {
+        try {
+          const element = reportFrame.locator(selector).first();
+          if (await element.isVisible({ timeout: 5000 })) {
+            await element.click();
+            this.logger.info(`Clicked Favorites tab using selector: ${selector}`);
+            favoritesClicked = true;
+            break;
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+      
+      if (favoritesClicked) {
+        // Wait for favorites list to load
+        await this.page!.waitForTimeout(3000);
+        
+        // Verify favorites loaded
+        const tableVisible = await reportFrame.locator('table tbody tr').first().isVisible({ timeout: 5000 })
+          .catch(() => false);
+          
+        if (tableVisible) {
+          this.logger.info('Favorites list loaded successfully');
+        } else {
+          this.logger.warn('Favorites list may not have loaded properly');
+        }
+      } else {
+        this.logger.warn('Could not click Favorites tab');
+      }
+    } else {
+      this.logger.warn('Report frame not found, trying to find reports on main page');
+    }
+    
+    await this.takeScreenshot(screenshots, 'favorites-page');
   }
 
   private async extractReport(screenshots: string[]): Promise<string> {
     this.logger.info('Extracting Lead Source ROI report');
     
+    // Try to find the report in the iframe first
+    const frameSelectors = [
+      '#reportFrame',
+      'iframe[id="reportFrame"]',
+      'iframe[name="reportFrame"]',
+      'iframe[src*="report"]',
+      'iframe'
+    ];
+    
+    let reportFrame = null;
+    for (const selector of frameSelectors) {
+      try {
+        const frameElement = this.page!.locator(selector).first();
+        if (await frameElement.isVisible({ timeout: 3000 })) {
+          reportFrame = this.page!.frameLocator(selector);
+          break;
+        }
+      } catch (e) {
+        continue;
+      }
+    }
+    
     // Look for Lead Source ROI in the reports list
-    await this.page!.waitForSelector('text=Lead Source ROI', { timeout: 15000 });
-    await this.takeScreenshot(screenshots, 'reports-list');
+    let reportFound = false;
+    let reportElement = null;
+    
+    if (reportFrame) {
+      // Try to find report inside iframe
+      try {
+        reportElement = reportFrame.locator('text="Lead Source ROI"').first();
+        if (await reportElement.isVisible({ timeout: 10000 })) {
+          reportFound = true;
+          this.logger.info('Found Lead Source ROI report in iframe');
+        }
+      } catch (e) {
+        this.logger.warn('Report not found in iframe');
+      }
+    }
+    
+    if (!reportFound) {
+      // Try to find report on main page
+      try {
+        reportElement = this.page!.locator('text="Lead Source ROI"').first();
+        if (await reportElement.isVisible({ timeout: 10000 })) {
+          reportFound = true;
+          this.logger.info('Found Lead Source ROI report on main page');
+        }
+      } catch (e) {
+        this.logger.error('Report not found on main page either');
+      }
+    }
+    
+    if (!reportFound) {
+      throw new Error('Could not find report "Lead Source ROI" in Favorites after trying all strategies. Make sure the report is saved in your Favorites tab.');
+    }
+    
+    await this.takeScreenshot(screenshots, 'report-found');
+    
+    // Set up new page listener before clicking (reports often open in new tabs)
+    const newPagePromise = this.page!.context().waitForEvent('page', { timeout: 30000 })
+      .catch(() => null);
     
     // Click on Lead Source ROI report
-    await this.page!.click('text=Lead Source ROI');
-    await this.page!.waitForTimeout(5000);
+    await reportElement!.click();
+    
+    // Check if new page opened
+    const newPage = await newPagePromise;
+    if (newPage) {
+      this.page = newPage;
+      await this.page.waitForLoadState('networkidle');
+      this.logger.info('Report opened in new tab');
+    } else {
+      await this.page!.waitForTimeout(5000);
+      this.logger.info('Report opened in same tab');
+    }
+    
     await this.takeScreenshot(screenshots, 'report-opened');
     
     // Set up download handling
-    const downloadPromise = this.page!.waitForEvent('download');
+    const downloadPromise = this.page!.waitForEvent('download', { timeout: 30000 });
     
-    // Click Download button
+    // Click Download button or Export arrow
     const downloadSelectors = [
+      '#lbl_ExportArrow',  // VinSolutions specific export button
+      '//a[@id="lbl_ExportArrow"]',
       'text=Download',
       'button:has-text("Download")',
       '[data-testid*="download"]',
-      'a:has-text("Download")'
+      'a:has-text("Download")',
+      '.download-button',
+      '[title*="Export"]'
     ];
     
+    let downloadClicked = false;
     for (const selector of downloadSelectors) {
-      const count = await this.page!.locator(selector).count();
-      if (count > 0) {
-        await this.page!.click(selector);
-        break;
+      try {
+        const element = selector.startsWith('//') 
+          ? this.page!.locator(`xpath=${selector}`)
+          : this.page!.locator(selector);
+          
+        if (await element.isVisible({ timeout: 5000 })) {
+          await element.click();
+          this.logger.info(`Clicked download button using selector: ${selector}`);
+          downloadClicked = true;
+          
+          // For export arrow, we need to select format
+          if (selector.includes('ExportArrow')) {
+            await this.page!.waitForTimeout(1000);
+            
+            // Click CSV option
+            const csvOption = this.page!.locator('text=CSV').first();
+            if (await csvOption.isVisible({ timeout: 3000 })) {
+              await csvOption.click();
+              this.logger.info('Selected CSV format');
+            }
+          }
+          
+          break;
+        }
+      } catch (e) {
+        continue;
       }
+    }
+    
+    if (!downloadClicked) {
+      throw new Error('Could not find or click download button');
     }
     
     // Wait for download to complete
     const download = await downloadPromise;
-    const downloadPath = path.join(this.config.downloadDir, `lead-source-roi-${Date.now()}.xlsx`);
+    const downloadPath = path.join(this.config.downloadDir, `lead-source-roi-${Date.now()}.${download.suggestedFilename().split('.').pop() || 'csv'}`);
     await download.saveAs(downloadPath);
     
     await this.takeScreenshot(screenshots, 'download-completed');
