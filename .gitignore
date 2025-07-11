@@ -1,2 +1,3 @@
 webhook-handler/.env
 webhook-handler/node_modules
+.env

@@ -82,7 +82,7 @@ async function runDemoTest() {
         baseURL: process.env.OPENROUTER_BASE_URL,
         defaultModel: process.env.OPENROUTER_DEFAULT_MODEL
       },
-      reportRecipients: [process.env.MAILGUN_FROM_EMAIL!], // Send to self for demo
+      reportRecipients: ['josh.copp@onekeel.ai'], // Send notifications to Josh
       downloadDir: path.resolve('./downloads'),
       screenshotDir: path.resolve('./screenshots'),
       webhookUrl: process.env.WEBHOOK_URL // Add webhook URL configuration (optional)
