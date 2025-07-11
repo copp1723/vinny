@@ -4,6 +4,7 @@ import { OpenRouterService } from '../services/OpenRouterService';
 import { Logger } from '../utils/Logger';
 import fs from 'fs-extra';
 import path from 'path';
+import axios from 'axios'; // Added axios for HTTP requests
 
 export interface DemoAgentConfig {
   // VinSolutions credentials
@@ -32,6 +33,7 @@ export interface DemoAgentConfig {
   reportRecipients: string[];
   downloadDir: string;
   screenshotDir: string;
+  webhookUrl?: string; // Added webhook URL configuration
 }
 
 export interface ExtractionResult {
@@ -210,8 +212,25 @@ export class DemoVinSolutionsAgent {
 
   private async handle2FA(screenshots: string[]): Promise<void> {
     try {
-      // Check if 2FA is required by looking for common 2FA indicators
+      // Wait for 2FA screen to load
+      try {
+        await this.page!.waitForSelector('text=/Verify your identity|Authentication|Two-Factor|2FA/i', { timeout: 10000 });
+        this.logger.info('2FA screen detected');
+        await this.takeScreenshot(screenshots, '2fa-screen-loaded');
+      } catch (err) {
+        this.logger.debug('2FA screen header not found, continuing with detection');
+      }
+
+      // 1. Update twoFactorIndicators to include factor selection screen indicators
       const twoFactorIndicators = [
+        // Factor selection screen indicators
+        'text=/Select.*method/i',
+        'button:has-text("Select")',
+        'text=/SMS.*Email/i',
+        'text=/@/',  // Email mask with @ symbol
+        'text=/Verify your identity/i',
+        
+        // Original indicators for code entry screen
         'text=verification',
         'text=code', 
         'text=authenticate',
@@ -221,100 +240,463 @@ export class DemoVinSolutionsAgent {
         'input[name*="code"]'
       ];
       
-      let has2FA = false;
-      for (const indicator of twoFactorIndicators) {
-        const count = await this.page!.locator(indicator).count();
-        if (count > 0) {
-          has2FA = true;
+      // 2. Differentiate between factor selection and code entry screens
+      let isFactorSelectionScreen = false;
+      let isCodeEntryScreen = false;
+      
+      // Check for factor selection screen (has Select buttons)
+      const selectButtonCount = await this.page!.locator('button:has-text("Select")').count();
+      if (selectButtonCount > 0) {
+        isFactorSelectionScreen = true;
+        this.logger.info('2FA factor selection screen detected');
+        await this.takeScreenshot(screenshots, '2fa-factor-selection');
+      }
+      
+      // Check for code entry screen (has code input)
+      const codeInputSelectors = [
+        'input[placeholder*="code"]',
+        'input[name*="code"]',
+        'input[type="text"]',
+        'input[type="number"]'
+      ];
+      
+      for (const selector of codeInputSelectors) {
+        if (await this.page!.locator(selector).count() > 0) {
+          isCodeEntryScreen = true;
+          this.logger.info('2FA code entry screen detected');
+          await this.takeScreenshot(screenshots, '2fa-code-entry');
           break;
         }
       }
       
+      // Check if any 2FA indicators are present if we haven't detected a specific screen yet
+      let has2FA = isFactorSelectionScreen || isCodeEntryScreen;
+      if (!has2FA) {
+        for (const indicator of twoFactorIndicators) {
+          const count = await this.page!.locator(indicator).count();
+          if (count > 0) {
+            has2FA = true;
+            this.logger.info(`2FA detected via indicator: ${indicator}`);
+            break;
+          }
+        }
+      }
+      
       if (has2FA) {
-        this.logger.info('2FA detected - DEMO MODE: Simulating email code retrieval');
+        this.logger.info('2FA detected - proceeding with email verification');
         await this.takeScreenshot(screenshots, '2fa-required');
         
-        // Select email option if available
-        try {
-          const emailOptions = [
-            'text=email',
-            '[data-testid*="email"]',
-            'button:has-text("email")',
-            'input[value*="email"]'
-          ];
-          
-          for (const option of emailOptions) {
-            const count = await this.page!.locator(option).count();
-            if (count > 0) {
-              await this.page!.click(option);
-              await this.page!.waitForTimeout(2000);
-              break;
+        // Handle factor selection if we're on that screen
+        if (isFactorSelectionScreen) {
+          // Select email option if available
+          try {
+            // richer selector list for e-mail MFA option
+            const emailOptionSelectors = [
+              'text=/email/i',
+              'label:has-text("Email")',
+              'span:has-text("Email")',
+              'button:has-text("Email")',
+              'input[type="radio"][value*="email" i]',
+              '[aria-label*="email" i]',
+              '.icon-email'
+            ];
+
+            // Track if we managed to click the e-mail factor
+            let emailOptionClicked = false;
+
+            /* ---------------------------------------------------------------
+             * Deterministic XPath first - improved version
+             * ------------------------------------------------------------- */
+            try {
+              // Improved deterministic XPath
+              const emailSelectXPaths = [
+                'xpath=//*[@id="button-verify-by-email"]', // Original
+                'xpath=//button[contains(text(), "Select") and (preceding-sibling::*[contains(text(), "@")] or ancestor::*[contains(text(), "@")])]', // More robust
+                'xpath=//div[contains(text(), "@")]/following::button[contains(text(), "Select")][1]', // Target first Select after @
+                'xpath=//button[contains(text(), "Select") and following-sibling::*[contains(text(), "@")]]', // Select before @
+                'xpath=//button[contains(text(), "Select") and parent::*[contains(., "@")]]' // Select within parent containing @
+              ];
+              
+              for (const xpath of emailSelectXPaths) {
+                const emailBtn = this.page!.locator(xpath);
+                if (await emailBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+                  await emailBtn.click();
+                  this.logger.debug(`2FA: Clicked email Select button via XPath: ${xpath}`);
+                  await this.takeScreenshot(screenshots, '2fa-xpath-success');
+                  await this.page!.waitForTimeout(1500);
+                  emailOptionClicked = true;
+                  break;
+                }
+              }
+            } catch (err: any) {
+              this.logger.debug('2FA: Deterministic XPath failed', { error: err.message });
+              await this.takeScreenshot(screenshots, '2fa-xpath-failure');
             }
+
+            // Add nth-based selector as a new strategy
+            if (!emailOptionClicked) {
+              try {
+                // Target the second "Select" button directly (bottom one in screenshot)
+                const nthSelectBtn = this.page!.locator('button:has-text("Select")').nth(1);
+                if (await nthSelectBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+                  await nthSelectBtn.click();
+                  this.logger.debug('2FA: Clicked email Select button via nth(1) selector');
+                  await this.takeScreenshot(screenshots, '2fa-nth-success');
+                  await this.page!.waitForTimeout(1500);
+                  emailOptionClicked = true;
+                }
+              } catch (err: any) {
+                this.logger.debug('2FA: nth-based selector failed', { error: err.message });
+                await this.takeScreenshot(screenshots, '2fa-nth-failure');
+              }
+            }
+
+            // Try standard selectors if still not clicked
+            if (!emailOptionClicked) {
+              for (const selector of emailOptionSelectors) {
+                const el = this.page!.locator(selector).first();
+                if (await el.isVisible({ timeout: 3000 }).catch(() => false)) {
+                  await el.click({ timeout: 3000 }).catch(() => {});
+                  this.logger.debug(`2FA: Clicked e-mail option using selector: ${selector}`);
+                  await this.takeScreenshot(screenshots, `2fa-selector-${selector.replace(/[^a-z0-9]/gi, '-')}`);
+                  emailOptionClicked = true;
+                  await this.page!.waitForTimeout(1500);
+                  break;
+                }
+              }
+            }
+
+            // Add new combined container and button selector
+            if (!emailOptionClicked) {
+              try {
+                const combinedSelectors = [
+                  'div:has-text("@") >> button:has-text("Select")',
+                  'div:has-text("@") button:has-text("Select")',
+                  'div:has-text("@") + div button:has-text("Select")'
+                ];
+                
+                for (const selector of combinedSelectors) {
+                  const combinedBtn = this.page!.locator(selector);
+                  if (await combinedBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+                    await combinedBtn.click();
+                    this.logger.debug(`2FA: Clicked email Select button via combined selector: ${selector}`);
+                    await this.takeScreenshot(screenshots, '2fa-combined-success');
+                    await this.page!.waitForTimeout(1500);
+                    emailOptionClicked = true;
+                    break;
+                  }
+                }
+              } catch (err: any) {
+                this.logger.debug('2FA: Combined selector failed', { error: err.message });
+                await this.takeScreenshot(screenshots, '2fa-combined-failure');
+              }
+            }
+
+            /* ------------------------------------------------------------------
+               If none of the basic selectors worked, try a layout-aware approach:
+               – Find any element that contains an "@" (masked email string)
+               – Click its sibling / container "Select" button
+               Improved layout heuristic with closer DOM traversal
+            ------------------------------------------------------------------ */
+            if (!emailOptionClicked) {
+              try {
+                // Look for the line that contains the masked email address
+                const emailCard = this.page!.locator('text=/@/').first(); // regex-like match
+                if (await emailCard.isVisible({ timeout: 3000 }).catch(() => false)) {
+                  // Try multiple traversal patterns
+                  const traversalPatterns = ['xpath=..', 'xpath=../..', 'xpath=ancestor::div[1]'];
+                  
+                  for (const traversal of traversalPatterns) {
+                    const selectBtn = emailCard.locator(traversal).locator('button:has-text("Select")').first();
+                    if (await selectBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+                      await selectBtn.click({ timeout: 3000 }).catch(() => {});
+                      this.logger.debug(`2FA: Clicked Select for email card containing "@" using traversal: ${traversal}`);
+                      await this.takeScreenshot(screenshots, `2fa-heuristic-${traversal}-success`);
+                      emailOptionClicked = true;
+                      await this.page!.waitForTimeout(1500);
+                      break;
+                    }
+                  }
+                }
+              } catch (err: any) {
+                this.logger.debug('2FA: email card selection attempt failed', { error: err.message });
+                await this.takeScreenshot(screenshots, '2fa-heuristic-failure');
+              }
+            }
+
+            /* ------------------------------------------------------------------
+               Final fallback: click the last "Select" button – typically email
+            ------------------------------------------------------------------ */
+            if (!emailOptionClicked) {
+              try {
+                const selectButtons = this.page!.locator('button:has-text("Select")');
+                const total = await selectButtons.count();
+                if (total > 0) {
+                  await selectButtons.nth(total - 1).click({ timeout: 3000 }).catch(() => {});
+                  this.logger.debug('2FA: Clicked last Select button as fallback (likely email)');
+                  await this.takeScreenshot(screenshots, '2fa-fallback-success');
+                  emailOptionClicked = true;
+                  await this.page!.waitForTimeout(1500);
+                }
+              } catch (err: any) {
+                this.logger.debug('2FA: fallback Select-button click failed', { error: err.message });
+                await this.takeScreenshot(screenshots, '2fa-fallback-failure');
+              }
+            }
+
+            // 3. If we successfully chose e-mail, click a "send code" / "next" style button
+            if (emailOptionClicked) {
+              await this.takeScreenshot(screenshots, '2fa-option-selected');
+              const sendCodeSelectors = [
+                'button:has-text("Send Code")',
+                'button:has-text("Send")',
+                'button:has-text("Next")',
+                'button:has-text("Continue")',
+                'input[type="submit"]',
+                'button[type="submit"]'
+              ];
+              
+              let sendCodeClicked = false;
+              for (const btnSelector of sendCodeSelectors) {
+                const btn = this.page!.locator(btnSelector).first();
+                if (await btn.isVisible({ timeout: 3000 }).catch(() => false)) {
+                  await btn.click({ timeout: 3000 }).catch(() => {});
+                  this.logger.debug(`2FA: Triggered code delivery using selector: ${btnSelector}`);
+                  await this.takeScreenshot(screenshots, '2fa-send-code-clicked');
+                  // 3. Allow time for the page to transition to code entry
+                  await this.page!.waitForTimeout(5000);
+                  sendCodeClicked = true;
+                  break;
+                }
+              }
+              
+              // 4. Check if we've moved to the code entry screen
+              if (sendCodeClicked) {
+                // Wait for code input to appear
+                for (const selector of codeInputSelectors) {
+                  try {
+                    await this.page!.waitForSelector(selector, { timeout: 5000 });
+                    isCodeEntryScreen = true;
+                    this.logger.info('Successfully transitioned to code entry screen');
+                    break;
+                  } catch {
+                    // Try next selector
+                  }
+                }
+                
+                if (!isCodeEntryScreen) {
+                  this.logger.warn('Failed to detect code entry screen after clicking Send Code');
+                  await this.takeScreenshot(screenshots, '2fa-code-entry-not-found');
+                  // 5. Add explicit error handling
+                  throw new Error('Failed to transition to 2FA code entry screen');
+                }
+              } else {
+                this.logger.warn('No Send Code button found after selecting email option');
+                await this.takeScreenshot(screenshots, '2fa-no-send-code-button');
+              }
+            } else {
+              // 5. Better error handling - throw specific error when all fallbacks fail
+              this.logger.warn('2FA: No email option could be selected after trying all strategies');
+              await this.takeScreenshot(screenshots, '2fa-all-fallbacks-failed');
+              throw new Error('Failed to select email option for 2FA after trying all strategies');
+            }
+          } catch (err: any) {
+            this.logger.warn('2FA: Error while selecting e-mail option', { error: err.message });
+            await this.takeScreenshot(screenshots, '2fa-selection-error');
+            throw new Error(`2FA selection failed: ${err.message}`);
           }
-        } catch {
-          // Email might already be selected
         }
 
-        // DEMO: Simulate waiting for 2FA code
-        this.logger.info('DEMO: Simulating 2FA code retrieval from email...');
-        
-        // Send notification about 2FA simulation
-        await this.mailgunService.sendNotificationEmail(
-          'Demo: 2FA Code Simulation',
-          'In production, the AI agent would automatically read the 2FA code from email using IMAP. For this demo, we will simulate receiving the code and entering it automatically.',
-          this.config.reportRecipients
-        );
-        
-        // Simulate a realistic delay for email retrieval
-        await this.page!.waitForTimeout(5000);
-        
-        // Generate a simulated 2FA code (in production, this comes from email)
-        const simulatedCode = '123456';
-        this.logger.info(`DEMO: Using simulated 2FA code: ${simulatedCode}`);
-        
-        // Enter the code
-        const codeInputs = [
-          'input[type="text"]',
-          'input[type="number"]', 
-          'input[name*="code"]',
-          'input[placeholder*="code"]'
-        ];
-        
-        for (const input of codeInputs) {
-          const count = await this.page!.locator(input).count();
-          if (count > 0) {
-            await this.page!.fill(input, simulatedCode);
-            break;
+        // Handle code entry (either we started here or transitioned from factor selection)
+        if (isCodeEntryScreen || await this.isCodeEntryScreenVisible()) {
+          // Wait for the real 2FA code from webhook instead of simulating
+          if (!this.config.webhookUrl) {
+            this.logger.warn('No webhook URL configured, falling back to simulated 2FA code');
+            await this.mailgunService.sendNotificationEmail(
+              'Warning: Using Simulated 2FA Code',
+              'No webhook URL was configured. Using a simulated code (123456) instead of retrieving a real code from the email webhook.',
+              this.config.reportRecipients
+            );
+            
+            // Use simulated code as fallback
+            await this.enterTwoFactorCode('123456', codeInputSelectors, screenshots);
+          } else {
+            // Use real webhook to get the 2FA code
+            await this.mailgunService.sendNotificationEmail(
+              '2FA Code Retrieval',
+              'The agent is waiting for the 2FA code to arrive at the webhook. This typically takes 15-30 seconds after selecting the email option.',
+              this.config.reportRecipients
+            );
+            
+            this.logger.info('Waiting for real 2FA code from webhook...');
+            await this.takeScreenshot(screenshots, '2fa-waiting-for-webhook');
+            
+            // Wait for email to arrive at webhook (15 seconds initial wait)
+            await this.page!.waitForTimeout(15000);
+            
+            // Try to get the code from webhook with retries
+            const code = await this.getCodeFromWebhook(screenshots);
+            if (code) {
+              this.logger.info(`Retrieved real 2FA code from webhook: ${code.substring(0, 2)}****`);
+              await this.enterTwoFactorCode(code, codeInputSelectors, screenshots);
+            } else {
+              throw new Error('Failed to retrieve 2FA code from webhook after multiple attempts');
+            }
           }
         }
         
-        await this.takeScreenshot(screenshots, '2fa-code-entered');
-        
-        // Submit 2FA
-        const submitButtons = [
-          'button:has-text("Verify")',
-          'button:has-text("Submit")',
-          'input[type="submit"]',
-          'button:has-text("Continue")'
-        ];
-        
-        for (const button of submitButtons) {
-          const count = await this.page!.locator(button).count();
-          if (count > 0) {
-            await this.page!.click(button);
-            break;
-          }
+        // 4. Verify we've actually moved past 2FA
+        const still2FA = await this.is2FAScreenVisible();
+        if (still2FA) {
+          this.logger.error('Still on 2FA screen after all attempts');
+          await this.takeScreenshot(screenshots, '2fa-not-completed');
+          // 5. Throw explicit error
+          throw new Error('Failed to complete 2FA process - still on authentication screen');
         }
         
-        await this.page!.waitForTimeout(5000);
-        await this.takeScreenshot(screenshots, 'after-2fa');
-        
-        this.logger.info('DEMO: 2FA simulation completed');
+        this.logger.info('2FA authentication completed successfully');
       }
     } catch (error: any) {
       this.logger.error('2FA handling failed', { error: error.message });
       throw error;
     }
+  }
+  
+  // Helper method to get 2FA code from webhook with retries
+  private async getCodeFromWebhook(screenshots: string[]): Promise<string | null> {
+    if (!this.config.webhookUrl) {
+      return null;
+    }
+    
+    const maxRetries = 5;
+    const retryDelayMs = 5000; // 5 seconds between retries
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        this.logger.info(`Attempting to retrieve 2FA code from webhook (attempt ${attempt}/${maxRetries})`);
+        
+        // Make request to webhook endpoint
+        const response = await axios.get(
+          `${this.config.webhookUrl}/api/code/latest?platform=vinsolutions&minConfidence=0.7`,
+          { timeout: 10000 }
+        );
+        
+        if (response.data && response.data.success && response.data.code) {
+          await this.takeScreenshot(screenshots, '2fa-webhook-code-received');
+          return response.data.code;
+        }
+        
+        this.logger.debug(`No valid code found in webhook response (attempt ${attempt}/${maxRetries})`);
+        
+        if (attempt < maxRetries) {
+          this.logger.info(`Waiting ${retryDelayMs/1000} seconds before next webhook check...`);
+          await this.page!.waitForTimeout(retryDelayMs);
+        }
+      } catch (err: any) {
+        this.logger.warn(`Error retrieving code from webhook (attempt ${attempt}/${maxRetries})`, { 
+          error: err.message 
+        });
+        
+        if (attempt < maxRetries) {
+          await this.page!.waitForTimeout(retryDelayMs);
+        }
+      }
+    }
+    
+    this.logger.error('Failed to retrieve 2FA code from webhook after all attempts');
+    await this.takeScreenshot(screenshots, '2fa-webhook-failed');
+    return null;
+  }
+  
+  // Helper method to enter 2FA code and submit
+  private async enterTwoFactorCode(code: string, codeInputSelectors: string[], screenshots: string[]): Promise<void> {
+    let codeEntered = false;
+    
+    // Try to enter the code in any matching input field
+    for (const input of codeInputSelectors) {
+      const count = await this.page!.locator(input).count();
+      if (count > 0) {
+        await this.page!.fill(input, code);
+        codeEntered = true;
+        this.logger.info('2FA code entered successfully');
+        break;
+      }
+    }
+    
+    if (!codeEntered) {
+      this.logger.warn('Could not find code input field');
+      await this.takeScreenshot(screenshots, '2fa-code-input-not-found');
+      throw new Error('Could not find input field for 2FA code');
+    } else {
+      await this.takeScreenshot(screenshots, '2fa-code-entered');
+      
+      // Submit 2FA
+      const submitButtons = [
+        'button:has-text("Verify")',
+        'button:has-text("Submit")',
+        'input[type="submit"]',
+        'button[type="submit"]',
+        'button:has-text("Continue")'
+      ];
+      
+      let submitClicked = false;
+      for (const button of submitButtons) {
+        const count = await this.page!.locator(button).count();
+        if (count > 0) {
+          await this.page!.click(button);
+          submitClicked = true;
+          this.logger.info('2FA code submitted');
+          break;
+        }
+      }
+      
+      if (!submitClicked) {
+        this.logger.warn('Could not find submit button for 2FA code');
+        await this.takeScreenshot(screenshots, '2fa-submit-not-found');
+        throw new Error('Could not find submit button for 2FA code');
+      }
+      
+      // Wait longer for 2FA processing
+      await this.page!.waitForTimeout(8000);
+      await this.takeScreenshot(screenshots, 'after-2fa');
+    }
+  }
+  
+  // Helper to check if we're still on a 2FA screen
+  private async is2FAScreenVisible(): Promise<boolean> {
+    const indicators = [
+      'text=/Verify your identity/i',
+      'text=/Authentication/i',
+      'text=/Two-Factor/i',
+      'text=/2FA/i',
+      'button:has-text("Select")',
+      'input[placeholder*="code"]',
+      'input[name*="code"]'
+    ];
+    
+    for (const indicator of indicators) {
+      if (await this.page!.locator(indicator).count() > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  // Helper to check if we're on the code entry screen
+  private async isCodeEntryScreenVisible(): Promise<boolean> {
+    const codeInputSelectors = [
+      'input[placeholder*="code"]',
+      'input[name*="code"]',
+      'input[type="text"]',
+      'input[type="number"]'
+    ];
+    
+    for (const selector of codeInputSelectors) {
+      if (await this.page!.locator(selector).count() > 0) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private async navigateToReports(screenshots: string[]): Promise<void> {
@@ -452,4 +834,3 @@ export class DemoVinSolutionsAgent {
     }
   }
 }
-

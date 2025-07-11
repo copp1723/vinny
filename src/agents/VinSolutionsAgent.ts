@@ -1,4 +1,4 @@
-import { Page, Browser } from 'playwright';
+import { Page, Browser, FrameLocator } from 'playwright';
 import { NotteClient } from 'notte-sdk';
 import { 
   PlatformAdapter, 
@@ -137,49 +137,103 @@ export class VinSolutionsAgent implements PlatformAdapter {
     }
 
     try {
-      this.logger.info('Navigating to reports section');
+      this.logger.info('Navigating to reports section using 3-click workflow');
 
-      // Use perception to find the reports navigation
-      const perception = await this.perceivePage();
-      
-      // Look for "Reports" in the navigation
-      const reportsNav = await this.findElementByDescription('Reports navigation link');
-      if (reportsNav.success && reportsNav.element) {
-        await this.page.click(`xpath=${reportsNav.element.xpath}`);
-      } else {
-        // Fallback: look for common report navigation patterns
-        const reportSelectors = [
-          'a[href*="reports"]',
-          'text=Reports',
-          '[data-testid*="reports"]',
-          '.nav-reports',
-          '#reports-nav'
-        ];
-        
-        for (const selector of reportSelectors) {
-          try {
-            await this.page.click(selector, { timeout: 5000 });
+      // Step 1: Click the Insights tab in the main navigation
+      this.logger.debug('Clicking on Insights tab');
+      const insightsSelectors = [
+        '//div[@id="tab-insights"]/a',  // Exact XPath provided
+        '#tab-insights a',              // CSS selector alternative
+        'a:has-text("Insights")',       // Text-based selector
+        'text=Insights'                 // Simple text selector
+      ];
+
+      let insightsClicked = false;
+      for (const selector of insightsSelectors) {
+        try {
+          const element = selector.startsWith('//') 
+            ? this.page.locator(`xpath=${selector}`)
+            : this.page.locator(selector);
+            
+          if (await element.isVisible({ timeout: 5000 })) {
+            await element.click();
+            this.logger.debug(`Clicked Insights tab using selector: ${selector}`);
+            insightsClicked = true;
             break;
-          } catch (e) {
-            continue;
           }
+        } catch (e) {
+          this.logger.debug(`Failed to click Insights using selector: ${selector}`);
+          continue;
         }
       }
 
-      await this.page.waitForLoadState('networkidle');
-      
-      // Verify we're on the reports page
-      const currentUrl = this.page.url();
-      const isOnReportsPage = currentUrl.includes('reports') || 
-                             await this.page.locator('text=REPORTS & DASHBOARDS').isVisible();
-
-      if (isOnReportsPage) {
-        this.logger.info('Successfully navigated to reports section');
-        return true;
-      } else {
-        this.logger.error('Failed to navigate to reports section');
+      if (!insightsClicked) {
+        this.logger.error('Failed to click Insights tab');
+        if (this.config.screenshotOnError) {
+          await this.takeErrorScreenshot('insights_tab_not_found');
+        }
         return false;
       }
+
+      // Step 2: Wait for the reports iframe to load
+      this.logger.debug('Waiting for report frame to load');
+      const reportFrame = await this.getReportFrame();
+      if (!reportFrame) {
+        this.logger.error('Report frame not found');
+        if (this.config.screenshotOnError) {
+          await this.takeErrorScreenshot('report_frame_not_found');
+        }
+        return false;
+      }
+      
+      // Step 3: Click on the Favorites tab inside the iframe
+      this.logger.debug('Clicking on Favorites tab');
+      const favoritesSelectors = [
+        'text=Favorites',
+        'a:has-text("Favorites")',
+        '.filter-favorites',
+        'a.favorites-link'
+      ];
+
+      let favoritesClicked = false;
+      for (const selector of favoritesSelectors) {
+        try {
+          const element = reportFrame.locator(selector);
+          if (await element.isVisible({ timeout: 5000 })) {
+            await element.click();
+            this.logger.debug(`Clicked Favorites tab using selector: ${selector}`);
+            favoritesClicked = true;
+            break;
+          }
+        } catch (e) {
+          this.logger.debug(`Failed to click Favorites using selector: ${selector}`);
+          continue;
+        }
+      }
+
+      if (!favoritesClicked) {
+        this.logger.error('Failed to click Favorites tab');
+        if (this.config.screenshotOnError) {
+          await this.takeErrorScreenshot('favorites_tab_not_found');
+        }
+        return false;
+      }
+
+      // Step 4: Wait for the favorites list to render
+      this.logger.debug('Waiting for favorites list to render');
+      const tableLoaded = await reportFrame.locator('table tbody tr').first().isVisible({ timeout: 10000 })
+        .catch(() => false);
+      
+      if (!tableLoaded) {
+        this.logger.error('Favorites list did not load');
+        if (this.config.screenshotOnError) {
+          await this.takeErrorScreenshot('favorites_list_not_loaded');
+        }
+        return false;
+      }
+
+      this.logger.info('Successfully navigated to reports and loaded favorites');
+      return true;
 
     } catch (error) {
       this.logger.error('Navigation to reports failed', { error: error.message });
@@ -187,6 +241,48 @@ export class VinSolutionsAgent implements PlatformAdapter {
         await this.takeErrorScreenshot('navigation_failed');
       }
       return false;
+    }
+  }
+
+  private async getReportFrame(): Promise<FrameLocator | null> {
+    if (!this.page) return null;
+    
+    try {
+      // Wait for the iframe to be available
+      const frameSelectors = [
+        '#reportFrame',
+        'iframe[id="reportFrame"]',
+        'iframe[name="reportFrame"]'
+      ];
+      
+      for (const selector of frameSelectors) {
+        try {
+          // First check if the iframe element exists and is visible
+          const frameElement = this.page.locator(selector);
+          if (await frameElement.isVisible({ timeout: this.config.timeout / 2 })) {
+            // Get the frame locator
+            const frameLocator = this.page.frameLocator(selector);
+            
+            // Verify the frame is accessible by checking for some content
+            const hasContent = await frameLocator.locator('body').isVisible({ timeout: this.config.timeout / 2 })
+              .catch(() => false);
+              
+            if (hasContent) {
+              this.logger.debug(`Found report frame using selector: ${selector}`);
+              return frameLocator;
+            }
+          }
+        } catch (e) {
+          this.logger.debug(`Frame selector failed: ${selector}`);
+          continue;
+        }
+      }
+      
+      this.logger.error('Could not find or access report frame');
+      return null;
+    } catch (error) {
+      this.logger.error('Error getting report frame', { error: error.message });
+      return null;
     }
   }
 
@@ -198,12 +294,12 @@ export class VinSolutionsAgent implements PlatformAdapter {
     }
 
     try {
-      this.logger.info(`Starting extraction of report: ${request.reportName}`);
+      this.logger.info(`Starting extraction of report: ${request.reportName || 'first available report'}`);
 
-      // Step 1: Find the report in the list using perception
+      // Step 1: Find the report in the list
       const reportFound = await this.findAndSelectReport(request.reportName);
       if (!reportFound) {
-        throw new Error(`Report "${request.reportName}" not found`);
+        throw new Error(`Report ${request.reportName ? `"${request.reportName}"` : ''} not found`);
       }
 
       // Step 2: Click the report to open it
@@ -213,38 +309,39 @@ export class VinSolutionsAgent implements PlatformAdapter {
       await this.page.waitForLoadState('networkidle');
       
       // Step 4: Download the report
-      const downloadResult = await this.downloadReport();
+      const downloadResult = await this.downloadReport(request);
       
       const executionTime = Date.now() - startTime;
 
       const result: ExtractionResult = {
         success: true,
-        reportName: request.reportName,
+        reportName: request.reportName || 'Unnamed Report',
         filePath: downloadResult.filePath,
         metadata: {
           extractedAt: new Date().toISOString(),
           platform: this.platformName,
           fileSize: downloadResult.fileSize,
+          fileType: downloadResult.fileType
         },
         attempt: 1,
         executionTime
       };
 
-      this.logger.info(`Successfully extracted report: ${request.reportName}`, result);
+      this.logger.info(`Successfully extracted report: ${result.reportName}`, result);
       return result;
 
     } catch (error) {
       const executionTime = Date.now() - startTime;
       
-      this.logger.error(`Failed to extract report: ${request.reportName}`, { error: error.message });
+      this.logger.error(`Failed to extract report: ${request.reportName || 'Unnamed Report'}`, { error: error.message });
       
       if (this.config.screenshotOnError) {
-        await this.takeErrorScreenshot(`extraction_failed_${request.reportName}`);
+        await this.takeErrorScreenshot(`extraction_failed_${request.reportName || 'unnamed'}`);
       }
 
       return {
         success: false,
-        reportName: request.reportName,
+        reportName: request.reportName || 'Unnamed Report',
         metadata: {
           extractedAt: new Date().toISOString(),
           platform: this.platformName,
@@ -256,114 +353,180 @@ export class VinSolutionsAgent implements PlatformAdapter {
     }
   }
 
-  private async findAndSelectReport(reportName: string): Promise<boolean> {
+  private async findAndSelectReport(reportName?: string): Promise<boolean> {
     try {
-      // Use perception to understand the reports list
-      const perception = await this.perceivePage();
-      
-      // Look for the specific report (e.g., "Lead Source ROI")
-      const reportElement = await this.findElementByDescription(`${reportName} report checkbox`);
-      
-      if (reportElement.success && reportElement.element) {
-        // Click the checkbox to select the report
-        await this.page.click(`xpath=${reportElement.element.xpath}`);
-        this.logger.info(`Selected report: ${reportName}`);
-        return true;
+      // Get the report frame
+      const reportFrame = await this.getReportFrame();
+      if (!reportFrame) {
+        throw new Error('Report frame not found');
       }
-
-      // Fallback: search for the report by text
-      const reportRow = this.page.locator(`text=${reportName}`).first();
-      if (await reportRow.isVisible()) {
-        // Find the checkbox in the same row
-        const checkbox = reportRow.locator('..').locator('input[type="checkbox"]').first();
-        if (await checkbox.isVisible()) {
-          await checkbox.click();
-          this.logger.info(`Selected report via fallback: ${reportName}`);
+      
+      this.logger.debug(`Looking for report: ${reportName || 'first available'}`);
+      
+      if (reportName) {
+        // Look for the specific report by name
+        const reportRow = reportFrame.locator(`text=${reportName}`).first();
+        
+        if (await reportRow.isVisible({ timeout: 5000 })) {
+          this.logger.info(`Found report: ${reportName}`);
           return true;
+        } else {
+          this.logger.error(`Report not found: ${reportName}`);
+          return false;
+        }
+      } else {
+        // If no specific report name, just check if there's at least one report in the list
+        const firstReport = reportFrame.locator('table tbody tr').first();
+        
+        if (await firstReport.isVisible({ timeout: 5000 })) {
+          this.logger.info('Found first available report');
+          return true;
+        } else {
+          this.logger.error('No reports found in favorites list');
+          return false;
         }
       }
-
-      return false;
     } catch (error) {
-      this.logger.error(`Failed to find and select report: ${reportName}`, { error: error.message });
+      this.logger.error(`Failed to find report: ${reportName || 'first available'}`, { error: error.message });
       return false;
     }
   }
 
-  private async openReport(reportName: string): Promise<void> {
-    // Click on the report name/link to open it
-    const reportLink = this.page.locator(`text=${reportName}`).first();
-    await reportLink.click();
+  private async openReport(reportName?: string): Promise<void> {
+    // Get the report frame
+    const reportFrame = await this.getReportFrame();
+    if (!reportFrame) {
+      throw new Error('Report frame not found');
+    }
     
-    // Wait for the report to load
-    await this.page.waitForLoadState('networkidle');
-    this.logger.info(`Opened report: ${reportName}`);
+    try {
+      // Find the report link
+      const reportLink = reportName 
+        ? reportFrame.locator(`text=${reportName}`).first()
+        : reportFrame.locator('table tbody tr td a').first();
+      
+      if (!await reportLink.isVisible({ timeout: 5000 })) {
+        throw new Error(`Report link ${reportName || 'first available'} not visible`);
+      }
+      
+      // Set up listener for new page before clicking
+      this.logger.debug('Setting up new page listener before clicking report');
+      const newPagePromise = this.page.context().waitForEvent('page', { timeout: 30000 });
+      
+      // Click the report link
+      await reportLink.click();
+      
+      // Wait for the new page to open
+      this.logger.debug('Waiting for new page to open');
+      const newPage = await newPagePromise;
+      
+      // Switch to the new page
+      this.page = newPage;
+      
+      // Wait for the report to load in the new page
+      await this.page.waitForLoadState('networkidle');
+      
+      this.logger.info(`Opened report: ${reportName || 'first available'} in new tab`);
+    } catch (error) {
+      this.logger.error(`Failed to open report: ${reportName || 'first available'}`, { error: error.message });
+      throw error;
+    }
   }
 
-  private async downloadReport(): Promise<{ filePath: string; fileSize: number }> {
-    // Use perception to find the download button
-    const downloadButton = await this.findElementByDescription('Download button');
+  private async downloadReport(request?: ReportRequest): Promise<{ filePath: string; fileSize: number; fileType: string }> {
+    if (!this.page) throw new Error('Page not initialized');
     
-    if (downloadButton.success && downloadButton.element) {
-      // Set up download promise before clicking
-      const downloadPromise = this.page.waitForEvent('download');
+    try {
+      // Get the preferred file type (default to CSV if not specified)
+      const fileType = (request && 'fileType' in request) ? request.fileType as string || 'CSV' : 'CSV';
+      this.logger.debug(`Attempting to download report as ${fileType}`);
       
-      await this.page.click(`xpath=${downloadButton.element.xpath}`);
+      // Click the download arrow button
+      const downloadArrowSelectors = [
+        '#lbl_ExportArrow',
+        'xpath=//*[@id="lbl_ExportArrow"]',
+        'button:has-text("Download")',
+        '.download-button'
+      ];
       
+      let arrowClicked = false;
+      for (const selector of downloadArrowSelectors) {
+        try {
+          const element = selector.startsWith('xpath=') 
+            ? this.page.locator(selector)
+            : this.page.locator(selector);
+            
+          if (await element.isVisible({ timeout: 5000 })) {
+            await element.click();
+            this.logger.debug(`Clicked download arrow using selector: ${selector}`);
+            arrowClicked = true;
+            break;
+          }
+        } catch (e) {
+          this.logger.debug(`Failed to click download arrow using selector: ${selector}`);
+          continue;
+        }
+      }
+      
+      if (!arrowClicked) {
+        throw new Error('Download arrow button not found');
+      }
+      
+      // Wait for dropdown menu to appear
+      await this.page.waitForSelector('text=Excel, text=CSV, text=PDF', { timeout: 5000 })
+        .catch(() => {
+          throw new Error('Download format dropdown did not appear');
+        });
+      
+      // Select the file format from the dropdown
+      let formatSelector: string;
+      switch (fileType.toUpperCase()) {
+        case 'EXCEL':
+          formatSelector = 'text=Excel';
+          break;
+        case 'PDF':
+          formatSelector = 'text=PDF';
+          break;
+        case 'CSV':
+        default:
+          formatSelector = 'text=CSV';
+          break;
+      }
+      
+      // Set up download promise before clicking the format
+      const downloadPromise = this.page.waitForEvent('download', { timeout: 30000 });
+      
+      // Click the format option
+      await this.page.click(formatSelector);
+      this.logger.debug(`Selected download format: ${fileType}`);
+      
+      // Wait for the download to start
       const download = await downloadPromise;
       const suggestedFilename = download.suggestedFilename();
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `${timestamp}_${suggestedFilename}`;
       const downloadPath = path.join(process.env.REPORTS_OUTPUT_DIR || './downloads', filename);
       
+      // Ensure the download directory exists
       await fs.ensureDir(path.dirname(downloadPath));
+      
+      // Save the downloaded file
       await download.saveAs(downloadPath);
       
+      // Get the file size
       const stats = await fs.stat(downloadPath);
+      
+      this.logger.info(`Downloaded report as ${fileType}: ${filename} (${stats.size} bytes)`);
       
       return {
         filePath: downloadPath,
-        fileSize: stats.size
+        fileSize: stats.size,
+        fileType: fileType
       };
+    } catch (error) {
+      this.logger.error('Failed to download report', { error: error.message });
+      throw error;
     }
-
-    // Fallback: look for common download button patterns
-    const downloadSelectors = [
-      'text=Download',
-      '[data-testid*="download"]',
-      '.download-button',
-      'button:has-text("Download")',
-      'a:has-text("Download")'
-    ];
-
-    for (const selector of downloadSelectors) {
-      try {
-        if (await this.page.locator(selector).isVisible()) {
-          const downloadPromise = this.page.waitForEvent('download');
-          await this.page.click(selector);
-          
-          const download = await downloadPromise;
-          const suggestedFilename = download.suggestedFilename();
-          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-          const filename = `${timestamp}_${suggestedFilename}`;
-          const downloadPath = path.join(process.env.REPORTS_OUTPUT_DIR || './downloads', filename);
-          
-          await fs.ensureDir(path.dirname(downloadPath));
-          await download.saveAs(downloadPath);
-          
-          const stats = await fs.stat(downloadPath);
-          
-          return {
-            filePath: downloadPath,
-            fileSize: stats.size
-          };
-        }
-      } catch (e) {
-        continue;
-      }
-    }
-
-    throw new Error('Download button not found');
   }
 
   private async perceivePage(): Promise<PerceptionResult> {
@@ -470,4 +633,3 @@ export class VinSolutionsAgent implements PlatformAdapter {
     this.logger.info('VinSolutions agent closed');
   }
 }
-

@@ -11,13 +11,21 @@ async function runDemoTest() {
   console.log('');
   console.log('This demo will show:');
   console.log('✅ AI-powered browser automation');
-  console.log('✅ Simulated email-based 2FA handling');
   console.log('✅ Intelligent report extraction');
   console.log('✅ Professional email delivery via Mailgun');
   console.log('✅ Complete error handling and notifications');
   console.log('');
-  console.log('🔧 Note: 2FA will be simulated to demonstrate the workflow');
-  console.log('   In production, the agent reads real 2FA codes from email');
+  
+  // Update demo description based on webhook configuration
+  if (process.env.WEBHOOK_URL) {
+    console.log('✅ Real 2FA code retrieval from webhook');
+    console.log('🔧 Note: Using webhook to retrieve actual 2FA codes');
+    console.log('   The agent will wait for real verification codes to arrive at the webhook');
+  } else {
+    console.log('✅ Simulated email-based 2FA handling');
+    console.log('🔧 Note: 2FA will be simulated with code 123456 (no webhook configured)');
+    console.log('   In production, the agent reads real 2FA codes from webhook');
+  }
   console.log('');
 
   try {
@@ -31,6 +39,7 @@ async function runDemoTest() {
       'MAILGUN_FROM_EMAIL',
       'OPENROUTER_API_KEY'
     ];
+    // WEBHOOK_URL is optional, so not included in requiredEnvVars
 
     const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
     if (missingVars.length > 0) {
@@ -46,6 +55,13 @@ async function runDemoTest() {
     console.log(`📧 From Email: ${process.env.MAILGUN_FROM_EMAIL}`);
     console.log(`🌐 VinSolutions URL: ${process.env.VINSOLUTIONS_URL}`);
     console.log(`🤖 OpenRouter Model: ${process.env.OPENROUTER_DEFAULT_MODEL || 'anthropic/claude-3.5-sonnet'}`);
+    
+    // Display webhook configuration status
+    if (process.env.WEBHOOK_URL) {
+      console.log(`🔗 Webhook URL: Configured (will use real 2FA codes)`);
+    } else {
+      console.log(`🔗 Webhook URL: Not configured (will use simulated 2FA codes)`);
+    }
     console.log('');
 
     // Create agent configuration
@@ -68,7 +84,8 @@ async function runDemoTest() {
       },
       reportRecipients: [process.env.MAILGUN_FROM_EMAIL!], // Send to self for demo
       downloadDir: path.resolve('./downloads'),
-      screenshotDir: path.resolve('./screenshots')
+      screenshotDir: path.resolve('./screenshots'),
+      webhookUrl: process.env.WEBHOOK_URL // Add webhook URL configuration (optional)
     };
 
     // Initialize the agent
@@ -84,7 +101,14 @@ async function runDemoTest() {
     console.log('The agent will now:');
     console.log('1. 📧 Send start notification via Mailgun');
     console.log('2. 🌐 Navigate to VinSolutions and login');
-    console.log('3. 🔐 Simulate 2FA handling (with notification)');
+    
+    // Update 2FA handling description based on webhook configuration
+    if (process.env.WEBHOOK_URL) {
+      console.log('3. 🔐 Handle 2FA with real webhook code retrieval');
+    } else {
+      console.log('3. 🔐 Simulate 2FA handling with code 123456');
+    }
+    
     console.log('4. 📊 Navigate to reports and find Lead Source ROI');
     console.log('5. 💾 Download the report');
     console.log('6. 📤 Email the report with professional formatting');
@@ -120,7 +144,14 @@ async function runDemoTest() {
     if (result.success) {
       console.log('🎊 DEMO SUCCESS! The AI agent has successfully:');
       console.log('✅ Logged into VinSolutions autonomously');
-      console.log('✅ Simulated 2FA handling (production uses real email)');
+      
+      // Update 2FA success message based on webhook configuration
+      if (process.env.WEBHOOK_URL) {
+        console.log('✅ Handled 2FA using real webhook code retrieval');
+      } else {
+        console.log('✅ Simulated 2FA handling (production uses real webhook)');
+      }
+      
       console.log('✅ Navigated to the correct report');
       console.log('✅ Downloaded the Lead Source ROI report');
       console.log('✅ Sent professional email with attachment via Mailgun');
@@ -130,12 +161,14 @@ async function runDemoTest() {
       console.log('');
       console.log('📧 Check your email for:');
       console.log('   1. Start notification');
-      console.log('   2. 2FA simulation notification');
+      console.log('   2. 2FA notification');
       console.log('   3. Professional report delivery with Excel attachment');
       console.log('   4. Beautiful HTML formatting with performance metrics');
       console.log('');
       console.log('🔧 For production deployment:');
-      console.log('   - Fix Gmail IMAP credentials for real 2FA handling');
+      if (!process.env.WEBHOOK_URL) {
+        console.log('   - Configure webhook URL for real 2FA code handling');
+      }
       console.log('   - Set headless: true for background operation');
       console.log('   - Configure scheduling for automated runs');
       console.log('   - Add additional platforms using the same framework');
@@ -161,7 +194,9 @@ async function runDemoTest() {
     console.log('1. Review the professional emails in your inbox');
     console.log('2. Check the downloaded report file');
     console.log('3. Review screenshots for any issues');
-    console.log('4. Fix Gmail IMAP for production 2FA handling');
+    if (!process.env.WEBHOOK_URL) {
+      console.log('4. Configure webhook URL for real 2FA code handling');
+    }
     console.log('5. Configure additional platforms');
     console.log('6. Set up scheduling for automated runs');
 
@@ -176,8 +211,10 @@ async function runDemoTest() {
     console.log('3. Ensure Mailgun API key and domain are correct');
     console.log('4. Verify OpenRouter API key has credits');
     console.log('5. Check network connectivity');
+    if (process.env.WEBHOOK_URL) {
+      console.log('6. Verify webhook server is running and accessible');
+    }
   }
 }
 
 runDemoTest().catch(console.error);
-
