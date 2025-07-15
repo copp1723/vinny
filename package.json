@@ -1,8 +1,8 @@
 {
-  "name": "vinny-agent",
+  "name": "swarm",
   "version": "1.0.0",
   "description": "Autonomous AI agent for VinSolutions report extraction",
-  "main": "dist/index.js",
+  "main": "dist/index-optimized.js",
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/server.ts",
@@ -13,7 +13,7 @@
     "test-complete": "ts-node run-complete-test.ts",
     "test-demo": "ts-node run-demo-test.ts",
     "autonomous": "ts-node run-autonomous-agent.ts",
-    "start": "node dist/run-autonomous-agent.js"
+    "start": "NODE_ENV=production node dist/index-optimized.js"
   },
   "dependencies": {
     "axios": "^1.10.0",
@@ -21,6 +21,7 @@
     "form-data": "^4.0.0",
     "fs-extra": "^11.2.0",
     "imap": "^0.8.19",
+    "imapflow": "^1.0.191",
     "mailparser": "^3.6.5",
     "nodemailer": "^6.9.7",
     "openai": "^4.20.1",

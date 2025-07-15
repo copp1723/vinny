@@ -1,0 +1,1 @@
+{"version":3,"file":"PerceptionService.js","sourceRoot":"","sources":["../../src/services/PerceptionService.ts"],"names":[],"mappings":";;;AAAA,MAAa,iBAAiB;IAC5B;QACE,sBAAsB;IACxB,CAAC;IAED,KAAK,CAAC,QAAQ,CAAC,KAAU;QACvB,sBAAsB;QACtB,OAAO,EAAE,OAAO,EAAE,KAAK,EAAE,KAAK,EAAE,mCAAmC,EAAE,CAAC;IACxE,CAAC;CACF;AATD,8CASC"}

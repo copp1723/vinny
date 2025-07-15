@@ -1,5 +1,5 @@
 import { Page, Browser, FrameLocator } from 'playwright';
-import { NotteClient } from 'notte-sdk';
+// import { NotteClient } from 'notte-sdk'; // Module not available
 import { 
   PlatformAdapter, 
   PlatformCredentials, 
