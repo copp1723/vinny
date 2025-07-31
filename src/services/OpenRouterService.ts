@@ -1,5 +1,7 @@
 import OpenAI from 'openai';
 import { Logger } from '../utils/Logger';
+import { PromptManager, PromptUtils, ContextBuilders, PromptType } from './prompts';
+import { PromptContext } from './prompts/PromptBuilder';
 
 export interface OpenRouterConfig {
   apiKey: string;
@@ -25,10 +27,25 @@ export interface TwoFactorCodeAnalysis {
   reasoning: string;
 }
 
+export interface LoginPageElements {
+  usernameSelector?: string;
+  passwordSelector?: string;
+  submitSelector?: string;
+  requires2FA?: boolean;
+}
+
+export interface PageActionPlan {
+  selector?: string;
+  coordinates?: { x: number; y: number };
+  strategy: 'click' | 'fill' | 'select' | 'navigate';
+  confidence: number;
+}
+
 export class OpenRouterService {
   private client: OpenAI;
   private logger: Logger;
   private defaultModel: string;
+  private promptManager: PromptManager;
 
   constructor(config: OpenRouterConfig) {
     this.client = new OpenAI({
@@ -37,6 +54,7 @@ export class OpenRouterService {
     });
     this.logger = new Logger('OpenRouterService');
     this.defaultModel = config.defaultModel || 'anthropic/claude-3.5-sonnet';
+    this.promptManager = new PromptManager(this.logger);
   }
 
   async analyzePageForElements(
@@ -271,6 +289,529 @@ Provide a concise, actionable recommendation (2-3 sentences max).`;
     } catch (error: any) {
       this.logger.error('OpenRouter connection test failed', { error: error.message });
       return false;
+    }
+  }
+
+  /**
+   * Analyze login page to find authentication elements
+   */
+  async analyzeLoginPage(base64Screenshot: string): Promise<LoginPageElements> {
+    try {
+      const prompt = `Analyze this login page and identify the authentication elements.
+
+Look for:
+1. Username/email input field
+2. Password input field  
+3. Submit/Sign In button
+4. Any 2FA indicators
+
+Return the CSS selectors or unique identifiers for each element found.
+
+Format your response as JSON:
+{
+  "usernameSelector": "CSS selector for username field",
+  "passwordSelector": "CSS selector for password field",
+  "submitSelector": "CSS selector for submit button",
+  "requires2FA": true/false
+}`;
+
+      const response = await this.client.chat.completions.create({
+        model: this.defaultModel,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: prompt },
+              { type: 'image_url', image_url: { url: `data:image/png;base64,${base64Screenshot}` } }
+            ]
+          }
+        ],
+        temperature: 0.1,
+        max_tokens: 1000
+      });
+
+      const result = response.choices[0]?.message?.content || '';
+      
+      // Parse response
+      try {
+        const match = result.match(/\{[\s\S]*\}/);
+        if (match) {
+          return JSON.parse(match[0]);
+        }
+      } catch {}
+      
+      // Fallback
+      return {
+        usernameSelector: 'input[type="email"], input[name="username"]',
+        passwordSelector: 'input[type="password"]',
+        submitSelector: 'button[type="submit"]'
+      };
+      
+    } catch (error) {
+      this.logger.error('Failed to analyze login page', error);
+      return {};
+    }
+  }
+
+  /**
+   * Analyze page for specific task and return action plan
+   */
+  async analyzePageForTask(
+    base64Screenshot: string, 
+    taskDescription: string,
+    parameters?: any
+  ): Promise<PageActionPlan> {
+    try {
+      const prompt = `Analyze this page to ${taskDescription}.
+
+${parameters ? `Additional context: ${JSON.stringify(parameters)}` : ''}
+
+Identify the BEST element to interact with and provide:
+1. CSS selector or XPath
+2. Pixel coordinates for clicking (if visible)
+3. Recommended strategy (click, fill, etc.)
+4. Confidence level (0-100)
+
+Prioritize elements that are clearly visible and match the task.
+
+Format response as JSON:
+{
+  "selector": "CSS or XPath selector",
+  "coordinates": { "x": 123, "y": 456 },
+  "strategy": "click",
+  "confidence": 95
+}`;
+
+      const response = await this.client.chat.completions.create({
+        model: this.defaultModel,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: prompt },
+              { type: 'image_url', image_url: { url: `data:image/png;base64,${base64Screenshot}` } }
+            ]
+          }
+        ],
+        temperature: 0.1,
+        max_tokens: 1000
+      });
+
+      const result = response.choices[0]?.message?.content || '';
+      
+      // Parse response
+      try {
+        const match = result.match(/\{[\s\S]*\}/);
+        if (match) {
+          return JSON.parse(match[0]);
+        }
+      } catch {}
+      
+      // Fallback
+      return {
+        strategy: 'click',
+        confidence: 0
+      };
+      
+    } catch (error) {
+      this.logger.error('Failed to analyze page for task', error);
+      return { strategy: 'click', confidence: 0 };
+    }
+  }
+
+  /**
+   * General screenshot analysis method
+   */
+  async analyzeScreenshot(base64Screenshot: string, prompt: string): Promise<string> {
+    try {
+      const response = await this.client.chat.completions.create({
+        model: this.defaultModel,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: prompt },
+              { type: 'image_url', image_url: { url: `data:image/png;base64,${base64Screenshot}` } }
+            ]
+          }
+        ],
+        temperature: 0.1,
+        max_tokens: 2000
+      });
+
+      return response.choices[0]?.message?.content || '';
+      
+    } catch (error) {
+      this.logger.error('Screenshot analysis failed', error);
+      throw error;
+    }
+  }
+
+  // ===== NEW PROMPT-BASED METHODS =====
+
+  /**
+   * Analyze natural language task instruction using structured prompts
+   */
+  async analyzeTaskInstruction(
+    taskInstruction: string,
+    currentUrl: string,
+    capabilities: string[] = [],
+    context?: PromptContext
+  ): Promise<any> {
+    try {
+      const promptContext = context || ContextBuilders.buildVinSolutionsContext(
+        'user',
+        currentUrl,
+        0,
+        [],
+        0
+      );
+
+      return await PromptUtils.analyzeTaskInstruction(
+        taskInstruction,
+        currentUrl,
+        capabilities,
+        (prompt) => this.executePromptWithModel(prompt),
+        this.logger
+      );
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Task instruction analysis failed', { error: err.message });
+      throw err;
+    }
+  }
+
+  /**
+   * Analyze screenshot with structured vision prompts
+   */
+  async analyzeScreenshotAdvanced(
+    screenshotBase64: string,
+    analysisType: string,
+    targetElements: string[] = [],
+    context: string = '',
+    promptContext?: PromptContext
+  ): Promise<any> {
+    try {
+      const fullContext = promptContext || ContextBuilders.buildVinSolutionsContext(
+        'user',
+        '',
+        0,
+        [],
+        0
+      );
+
+      return await PromptUtils.analyzeScreenshot(
+        analysisType,
+        context,
+        targetElements,
+        (prompt) => this.executeVisionPrompt(prompt, screenshotBase64),
+        this.logger
+      );
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Advanced screenshot analysis failed', { error: err.message });
+      throw err;
+    }
+  }
+
+  /**
+   * Plan navigation path using AI reasoning
+   */
+  async planNavigationPath(
+    currentPage: string,
+    currentUrl: string,
+    userGoal: string,
+    availableElements: string[] = [],
+    previousActions: string[] = [],
+    context?: PromptContext
+  ): Promise<any> {
+    try {
+      const promptContext = context || ContextBuilders.buildVinSolutionsContext(
+        'user',
+        currentUrl,
+        0,
+        previousActions,
+        0
+      );
+
+      return await PromptUtils.planNavigationPath(
+        currentPage,
+        currentUrl,
+        userGoal,
+        availableElements,
+        previousActions,
+        (prompt) => this.executePromptWithModel(prompt),
+        this.logger
+      );
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Navigation planning failed', { error: err.message });
+      throw err;
+    }
+  }
+
+  /**
+   * Verify task completion using structured analysis
+   */
+  async verifyTaskCompletion(
+    originalTask: string,
+    expectedOutcome: string,
+    currentState: string,
+    userIntent: string,
+    context?: PromptContext
+  ): Promise<any> {
+    try {
+      return await PromptUtils.verifyTaskCompletion(
+        originalTask,
+        expectedOutcome,
+        currentState,
+        userIntent,
+        (prompt) => this.executePromptWithModel(prompt),
+        this.logger
+      );
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Task completion verification failed', { error: err.message });
+      throw err;
+    }
+  }
+
+  /**
+   * Plan error recovery strategy with AI assistance
+   */
+  async planErrorRecovery(
+    originalTask: string,
+    failedAction: string,
+    errorDetails: string,
+    currentState: string,
+    attemptsMade: number = 0,
+    context?: PromptContext
+  ): Promise<any> {
+    try {
+      const promptContext = context || ContextBuilders.buildVinSolutionsContext(
+        'user',
+        '',
+        0,
+        [],
+        attemptsMade
+      );
+
+      return await PromptUtils.planErrorRecovery(
+        originalTask,
+        failedAction,
+        errorDetails,
+        currentState,
+        attemptsMade,
+        (prompt) => this.executePromptWithModel(prompt),
+        this.logger
+      );
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Error recovery planning failed', { error: err.message });
+      throw err;
+    }
+  }
+
+  /**
+   * Identify UI elements with precise targeting
+   */
+  async identifyElements(
+    screenshotBase64: string,
+    identificationTask: string,
+    targetDescription: string,
+    context: string = '',
+    promptContext?: PromptContext
+  ): Promise<any> {
+    try {
+      return await PromptUtils.identifyElements(
+        identificationTask,
+        targetDescription,
+        context,
+        (prompt) => this.executeVisionPrompt(prompt, screenshotBase64),
+        this.logger
+      );
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Element identification failed', { error: err.message });
+      throw err;
+    }
+  }
+
+  /**
+   * Optimize action sequences for maximum efficiency
+   */
+  async optimizeActionSequence(
+    goal: string,
+    availableActions: string[],
+    constraints: string[] = [],
+    currentState: string = '',
+    context?: PromptContext
+  ): Promise<any> {
+    try {
+      return await PromptUtils.optimizeActionSequence(
+        goal,
+        availableActions,
+        constraints,
+        currentState,
+        (prompt) => this.executePromptWithModel(prompt),
+        this.logger
+      );
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Action sequence optimization failed', { error: err.message });
+      throw err;
+    }
+  }
+
+  /**
+   * Analyze patterns from successful executions for learning
+   */
+  async analyzePatterns(
+    taskType: string,
+    actionsTaken: string[],
+    successMetrics: Record<string, any>,
+    context: string = '',
+    timing: Record<string, number> = {},
+    promptContext?: PromptContext
+  ): Promise<any> {
+    try {
+      return await PromptUtils.analyzePatterns(
+        taskType,
+        actionsTaken,
+        successMetrics,
+        context,
+        timing,
+        (prompt) => this.executePromptWithModel(prompt),
+        this.logger
+      );
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Pattern analysis failed', { error: err.message });
+      throw err;
+    }
+  }
+
+  /**
+   * Execute a prompt with the configured model
+   */
+  private async executePromptWithModel(prompt: string): Promise<string> {
+    const response = await this.client.chat.completions.create({
+      model: this.defaultModel,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      max_tokens: 2000,
+      temperature: 0.1,
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No response from OpenRouter model');
+    }
+
+    return content;
+  }
+
+  /**
+   * Execute a vision prompt with screenshot
+   */
+  private async executeVisionPrompt(prompt: string, screenshotBase64: string): Promise<string> {
+    const response = await this.client.chat.completions.create({
+      model: this.defaultModel,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:image/png;base64,${screenshotBase64}`,
+              },
+            },
+          ],
+        },
+      ],
+      max_tokens: 2000,
+      temperature: 0.1,
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No response from OpenRouter vision model');
+    }
+
+    return content;
+  }
+
+  /**
+   * Get prompt manager statistics
+   */
+  getPromptStats() {
+    return this.promptManager.getStats();
+  }
+
+  /**
+   * Clear prompt manager cache
+   */
+  clearPromptCache() {
+    this.promptManager.clearCache();
+  }
+
+  /**
+   * Execute custom prompt with full control
+   */
+  async executeCustomPrompt(
+    promptType: PromptType,
+    variables: Record<string, any>,
+    context?: PromptContext,
+    options?: {
+      useCache?: boolean;
+      maxRetries?: number;
+      timeout?: number;
+      includeDebugInfo?: boolean;
+    }
+  ): Promise<any> {
+    try {
+      const result = await this.promptManager.executePrompt(
+        promptType,
+        variables,
+        (prompt) => this.executePromptWithModel(prompt),
+        context,
+        {
+          useCache: options?.useCache ?? true,
+          maxRetries: options?.maxRetries ?? 3,
+          timeout: options?.timeout ?? 30000,
+          saveDebugInfo: options?.includeDebugInfo ?? false,
+          includeValidation: true,
+          responseFormat: 'json'
+        }
+      );
+
+      if (!result.success) {
+        throw new Error(result.error || 'Custom prompt execution failed');
+      }
+
+      return result.data;
+
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Custom prompt execution failed', { 
+        promptType, 
+        error: err.message 
+      });
+      throw err;
     }
   }
 }

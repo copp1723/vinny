@@ -1,5 +1,5 @@
 import { Page, Browser, FrameLocator } from 'playwright';
-import { NotteClient } from 'notte-sdk';
+// import { NotteClient } from 'notte-sdk'; // Removed: notte-sdk not available
 import { 
   PlatformAdapter, 
   PlatformCredentials, 
@@ -18,7 +18,7 @@ export class VinSolutionsAgent implements PlatformAdapter {
   public readonly platformName = 'vinsolutions';
   private page: Page | null = null;
   private browser: Browser | null = null;
-  private notte: NotteClient;
+  // private notte: NotteClient; // Removed: notte-sdk not available
   private logger: Logger;
   private fileManager: FileManager;
   private config: AgentConfig;
@@ -28,9 +28,9 @@ export class VinSolutionsAgent implements PlatformAdapter {
     this.config = config;
     this.logger = new Logger('VinSolutionsAgent');
     this.fileManager = new FileManager();
-    this.notte = new NotteClient({
-      apiKey: process.env.NOTTE_API_KEY
-    });
+    // this.notte = new NotteClient({
+    //   apiKey: process.env.NOTTE_API_KEY
+    // }); // Removed: notte-sdk not available
   }
 
   async initialize(browser: Browser): Promise<void> {
@@ -411,6 +411,9 @@ export class VinSolutionsAgent implements PlatformAdapter {
       
       // Set up listener for new page before clicking
       this.logger.debug('Setting up new page listener before clicking report');
+      if (!this.page) {
+        throw new Error('Page not initialized');
+      }
       const newPagePromise = this.page.context().waitForEvent('page', { timeout: 30000 });
       
       // Click the report link

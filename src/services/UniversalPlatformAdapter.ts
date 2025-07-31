@@ -11,8 +11,6 @@ import {
 } from '../types';
 import { Logger } from '../utils/Logger';
 import { FileManager } from '../utils/FileManager';
-import { PerceptionService } from './PerceptionService';
-import { VisionService } from './VisionService';
 import path from 'path';
 import fs from 'fs-extra';
 
@@ -22,8 +20,6 @@ export class UniversalPlatformAdapter implements PlatformAdapter {
   private browser: Browser | null = null;
   private logger: Logger;
   private fileManager: FileManager;
-  private perceptionService: PerceptionService;
-  private visionService: VisionService;
   private config: AgentConfig;
   private isAuthenticated = false;
   private platformConfig: PlatformConfig;
@@ -34,8 +30,6 @@ export class UniversalPlatformAdapter implements PlatformAdapter {
     this.platformConfig = platformConfig || this.getDefaultPlatformConfig();
     this.logger = new Logger(`UniversalAdapter-${platformName}`);
     this.fileManager = new FileManager();
-    this.perceptionService = new PerceptionService();
-    this.visionService = new VisionService();
   }
 
   private getDefaultPlatformConfig(): PlatformConfig {
@@ -125,18 +119,11 @@ export class UniversalPlatformAdapter implements PlatformAdapter {
         timeout: this.config.timeout 
       });
 
-      // Use perception to understand the login page
-      const perception = await this.perceptionService.perceivePage(this.page);
-      this.logger.debug('Login page perception', { 
+      // Log current URL for debugging
+      this.logger.debug('Login page loaded', { 
         platform: this.platformName,
-        perception: perception.markdown.substring(0, 500) 
+        url: this.page.url() 
       });
-
-      // Try intelligent login first
-      const intelligentLogin = await this.attemptIntelligentLogin(credentials, perception);
-      if (intelligentLogin) {
-        return await this.verifyLoginSuccess();
-      }
 
       // Fallback to traditional selectors
       const traditionalLogin = await this.attemptTraditionalLogin(credentials);
@@ -160,58 +147,6 @@ export class UniversalPlatformAdapter implements PlatformAdapter {
     }
   }
 
-  private async attemptIntelligentLogin(
-    credentials: PlatformCredentials, 
-    perception: PerceptionResult
-  ): Promise<boolean> {
-    try {
-      // Use vision to find username field
-      const usernameField = await this.visionService.findElementByDescription(
-        this.page!, 
-        'username input field'
-      );
-      
-      if (usernameField.success && usernameField.element) {
-        await this.page!.click(`xpath=${usernameField.element.xpath}`);
-        await this.page!.fill(`xpath=${usernameField.element.xpath}`, credentials.username);
-      } else {
-        return false;
-      }
-
-      // Use vision to find password field
-      const passwordField = await this.visionService.findElementByDescription(
-        this.page!, 
-        'password input field'
-      );
-      
-      if (passwordField.success && passwordField.element) {
-        await this.page!.click(`xpath=${passwordField.element.xpath}`);
-        await this.page!.fill(`xpath=${passwordField.element.xpath}`, credentials.password);
-      } else {
-        return false;
-      }
-
-      // Use vision to find login button
-      const loginButton = await this.visionService.findElementByDescription(
-        this.page!, 
-        'login button'
-      );
-      
-      if (loginButton.success && loginButton.element) {
-        await this.page!.click(`xpath=${loginButton.element.xpath}`);
-        await this.page!.waitForLoadState('networkidle');
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      this.logger.debug('Intelligent login failed, trying fallback', { 
-        platform: this.platformName,
-        error: error.message 
-      });
-      return false;
-    }
-  }
 
   private async attemptTraditionalLogin(credentials: PlatformCredentials): Promise<boolean> {
     try {
@@ -299,11 +234,6 @@ export class UniversalPlatformAdapter implements PlatformAdapter {
     try {
       this.logger.info(`Navigating to reports section for platform: ${this.platformName}`);
 
-      // Try intelligent navigation first
-      const intelligentNav = await this.attemptIntelligentNavigation();
-      if (intelligentNav) {
-        return await this.verifyReportsPage();
-      }
 
       // Fallback to traditional navigation
       const traditionalNav = await this.attemptTraditionalNavigation();
@@ -327,24 +257,6 @@ export class UniversalPlatformAdapter implements PlatformAdapter {
     }
   }
 
-  private async attemptIntelligentNavigation(): Promise<boolean> {
-    try {
-      const reportsNav = await this.visionService.findElementByDescription(
-        this.page!, 
-        'Reports navigation link'
-      );
-      
-      if (reportsNav.success && reportsNav.element) {
-        await this.page!.click(`xpath=${reportsNav.element.xpath}`);
-        await this.page!.waitForLoadState('networkidle');
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      return false;
-    }
-  }
 
   private async attemptTraditionalNavigation(): Promise<boolean> {
     for (const selector of this.platformConfig.navigationSelectors.reports) {
@@ -445,20 +357,7 @@ export class UniversalPlatformAdapter implements PlatformAdapter {
   }
 
   private async findReport(reportName: string): Promise<boolean> {
-    // Use perception to understand the reports list
-    const perception = await this.perceptionService.perceivePage(this.page!);
-    
-    // Try intelligent search first
-    const reportElement = await this.visionService.findElementByDescription(
-      this.page!, 
-      `${reportName} report`
-    );
-    
-    if (reportElement.success) {
-      return true;
-    }
-
-    // Fallback: search by text
+    // Search by text
     const reportLocator = this.page!.locator(`text=${reportName}`).first();
     return await reportLocator.isVisible();
   }
@@ -501,17 +400,7 @@ export class UniversalPlatformAdapter implements PlatformAdapter {
   }
 
   private async downloadReport(): Promise<{ filePath: string; fileSize: number }> {
-    // Try intelligent download first
-    const downloadButton = await this.visionService.findElementByDescription(
-      this.page!, 
-      'Download button'
-    );
-    
-    if (downloadButton.success && downloadButton.element) {
-      return await this.executeDownload(`xpath=${downloadButton.element.xpath}`);
-    }
-
-    // Fallback to traditional selectors
+    // Use traditional selectors to find download buttons
     for (const selector of [...this.platformConfig.downloadSelectors.downloadButton, ...this.platformConfig.downloadSelectors.exportButton]) {
       try {
         if (await this.page!.locator(selector).isVisible()) {

@@ -1,6 +1,7 @@
 import { chromium, Browser, Page } from 'playwright';
 import path from 'path';
 import fs from 'fs-extra';
+import { FileManager } from './utils/FileManager';
 
 interface VinSolutionsCredentials {
   username: string;
@@ -20,6 +21,7 @@ export class VinSolutionsExtractor {
   private browser: Browser | null = null;
   private page: Page | null = null;
   private screenshots: string[] = [];
+  private fileManager = new FileManager();
 
   async initialize(): Promise<void> {
     console.log('🚀 Initializing VinSolutions extractor...');
@@ -40,7 +42,7 @@ export class VinSolutionsExtractor {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const downloadPath = path.join('./downloads', `${timestamp}_${filename}`);
       
-      await fs.ensureDir('./downloads');
+      await this.fileManager.ensureDirectory('./downloads');
       await download.saveAs(downloadPath);
       console.log(`📥 Downloaded: ${downloadPath}`);
     });
@@ -55,7 +57,7 @@ export class VinSolutionsExtractor {
     const filename = `${timestamp}_${name}.png`;
     const screenshotPath = path.join('./screenshots', filename);
     
-    await fs.ensureDir('./screenshots');
+    await this.fileManager.ensureDirectory('./screenshots');
     await this.page.screenshot({ path: screenshotPath, fullPage: true });
     
     this.screenshots.push(screenshotPath);
@@ -430,4 +432,3 @@ export class VinSolutionsExtractor {
     }
   }
 }
-

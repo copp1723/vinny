@@ -59,7 +59,7 @@ async function testExtractor() {
     }
     
   } catch (error) {
-    console.log(`💥 Test failed: ${error.message}`);
+    console.log(`💥 Test failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

@@ -76,7 +76,7 @@ export class AutonomousVinSolutionsAgent {
       await this.navigateToReports();
       const filePath = await this.downloadReport(reportName);
       
-      await this.sendSuccessNotification(reportName, filePath);
+      await this.sendSuccessNotification(filePath);
       this.addStep('Autonomous extraction completed successfully', 'completed');
       
       return { success: true, filePath };
@@ -85,7 +85,7 @@ export class AutonomousVinSolutionsAgent {
       this.addStep('Autonomous extraction failed', 'failed', errorMessage);
       this.logger.error('Extraction failed:', error);
       
-      await this.sendErrorNotification(reportName, errorMessage);
+      await this.sendErrorNotification(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
       await this.cleanup();
@@ -370,7 +370,7 @@ export class AutonomousVinSolutionsAgent {
       <p><em>This report was generated automatically by your autonomous AI agent.</em></p>
     `;
     
-    const attachments = fs.existsSync(filePath) ? [filePath] : [];
+    const attachments = fs.existsSync(filePath) ? [{ filename: path.basename(filePath), path: filePath }] : [];
     
     await this.mailgun.sendEmail({
       to: this.config.notifications.recipients,

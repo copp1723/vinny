@@ -1,5 +1,21 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const Ajv = require('ajv');
+const ajv = new Ajv();
+const webhookSchema = {
+  type: 'object',
+  properties: {
+    sender: { type: 'string' },
+    recipient: { type: 'string' },
+    subject: { type: 'string' },
+    'body-plain': { type: 'string' },
+    'stripped-text': { type: 'string' },
+    body: { type: 'string' }
+  },
+  required: ['sender', 'subject'],
+  additionalProperties: true
+};
 
 // Configuration
 const PORT = process.env.PORT || 3000;
@@ -78,9 +94,21 @@ const codeStore = {
 // Create Express app
 const app = express();
 
-// Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Security headers
+app.use(helmet());
+
+// Basic rate limiting: max 100 requests per 15 minutes per IP
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
+
+// Built-in body parsing
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -142,6 +170,13 @@ app.get('/health', (req, res) => {
 // Webhook endpoint for Mailgun
 app.post('/webhook/2fa', (req, res) => {
   try {
+    const valid = ajv.validate(webhookSchema, req.body);
+    if (!valid) {
+      console.error('Invalid webhook payload', ajv.errors);
+      return res.status(400).json({ success: false, message: 'Invalid payload' });
+    }
+
+    console.log("Raw incoming webhook body:", JSON.stringify(req.body, null, 2));
     console.log('Received webhook from Mailgun:');
     console.log(`- From: ${req.body.sender}`);
     console.log(`- To: ${req.body.recipient}`);
@@ -279,6 +314,11 @@ app.get('/api/codes', (req, res) => {
     });
   }
 });
+
+// Periodic cleanup of expired codes (runs every minute)
+setInterval(() => {
+  codeStore.cleanup();
+}, 60 * 1000);
 
 // Start server
 app.listen(PORT, () => {

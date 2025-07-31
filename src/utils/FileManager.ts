@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
+import os from 'os';
 import { Logger } from './Logger';
 
 export class FileManager {
@@ -9,12 +10,19 @@ export class FileManager {
     this.logger = new Logger('FileManager');
   }
 
-  async ensureDirectory(dirPath: string): Promise<void> {
+  // Primary method name for consistency with UnifiedVinSolutionsAgent
+  async ensureDirectoryExists(dirPath: string, maxAgeDays: number = 30): Promise<void> {
+    return this.ensureDirectory(dirPath, maxAgeDays);
+  }
+
+  async ensureDirectory(dirPath: string, maxAgeDays: number = 30): Promise<void> {
     try {
       await fs.ensureDir(dirPath);
+      await this.cleanOldFiles(dirPath, maxAgeDays);
       this.logger.debug(`Ensured directory exists: ${dirPath}`);
     } catch (error) {
-      this.logger.error(`Failed to ensure directory: ${dirPath}`, { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to ensure directory: ${dirPath}`, { error: err.message });
       throw error;
     }
   }
@@ -22,10 +30,13 @@ export class FileManager {
   async saveFile(filePath: string, content: string | Buffer): Promise<void> {
     try {
       await this.ensureDirectory(path.dirname(filePath));
-      await fs.writeFile(filePath, content);
+      const tempPath = path.join(path.dirname(filePath), `${path.basename(filePath)}.${Date.now()}.tmp`);
+      await fs.writeFile(tempPath, content);
+      await fs.move(tempPath, filePath, { overwrite: true });
       this.logger.info(`File saved: ${filePath}`);
     } catch (error) {
-      this.logger.error(`Failed to save file: ${filePath}`, { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to save file: ${filePath}`, { error: err.message });
       throw error;
     }
   }
@@ -36,7 +47,8 @@ export class FileManager {
       await fs.move(sourcePath, destinationPath);
       this.logger.info(`File moved: ${sourcePath} -> ${destinationPath}`);
     } catch (error) {
-      this.logger.error(`Failed to move file: ${sourcePath} -> ${destinationPath}`, { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to move file: ${sourcePath} -> ${destinationPath}`, { error: err.message });
       throw error;
     }
   }
@@ -47,7 +59,8 @@ export class FileManager {
       await fs.copy(sourcePath, destinationPath);
       this.logger.info(`File copied: ${sourcePath} -> ${destinationPath}`);
     } catch (error) {
-      this.logger.error(`Failed to copy file: ${sourcePath} -> ${destinationPath}`, { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to copy file: ${sourcePath} -> ${destinationPath}`, { error: err.message });
       throw error;
     }
   }
@@ -57,8 +70,30 @@ export class FileManager {
       await fs.remove(filePath);
       this.logger.info(`File deleted: ${filePath}`);
     } catch (error) {
-      this.logger.error(`Failed to delete file: ${filePath}`, { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to delete file: ${filePath}`, { error: err.message });
       throw error;
+    }
+  }
+
+  /**
+   * Remove files older than maxAgeDays in the given directory.
+   */
+  async cleanOldFiles(dirPath: string, maxAgeDays: number): Promise<void> {
+    try {
+      const cutoff = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
+      const files = await fs.readdir(dirPath);
+      for (const file of files) {
+        const fullPath = path.join(dirPath, file);
+        const stats = await fs.stat(fullPath);
+        if (stats.mtime.getTime() < cutoff) {
+          await fs.remove(fullPath);
+          this.logger.info(`Cleaned old file: ${fullPath}`);
+        }
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to clean old files in: ${dirPath}`, { error: err.message });
     }
   }
 
@@ -66,7 +101,8 @@ export class FileManager {
     try {
       return await fs.pathExists(filePath);
     } catch (error) {
-      this.logger.error(`Failed to check file existence: ${filePath}`, { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to check file existence: ${filePath}`, { error: err.message });
       return false;
     }
   }
@@ -75,7 +111,8 @@ export class FileManager {
     try {
       return await fs.stat(filePath);
     } catch (error) {
-      this.logger.error(`Failed to get file stats: ${filePath}`, { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to get file stats: ${filePath}`, { error: err.message });
       return null;
     }
   }
@@ -84,7 +121,8 @@ export class FileManager {
     try {
       return await fs.readFile(filePath, 'utf-8');
     } catch (error) {
-      this.logger.error(`Failed to read file: ${filePath}`, { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to read file: ${filePath}`, { error: err.message });
       throw error;
     }
   }
@@ -97,7 +135,8 @@ export class FileManager {
       }
       return files;
     } catch (error) {
-      this.logger.error(`Failed to list files in directory: ${dirPath}`, { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to list files in directory: ${dirPath}`, { error: err.message });
       throw error;
     }
   }
@@ -112,4 +151,3 @@ export class FileManager {
     return filename.replace(/[<>:"/\\|?*]/g, '_').replace(/\s+/g, '_');
   }
 }
-

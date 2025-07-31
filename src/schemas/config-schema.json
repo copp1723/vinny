@@ -1,0 +1,231 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://vinny-agent/schemas/config.json",
+  "title": "Vinny Agent Configuration",
+  "description": "Configuration schema for UnifiedVinSolutionsAgent",
+  "type": "object",
+  "required": ["target", "authentication"],
+  "properties": {
+    "target": {
+      "type": "object",
+      "description": "Target configuration for the task",
+      "required": ["url", "taskType"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Target URL for the Cox product",
+          "examples": [
+            "https://provision.vauto.com",
+            "https://vinsolutions.com",
+            "https://dealer.com"
+          ]
+        },
+        "taskType": {
+          "type": "string",
+          "enum": ["report", "lead-activity", "dnc-check", "custom"],
+          "description": "Type of task to execute"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Task-specific parameters",
+          "properties": {
+            "reportPosition": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Position of report in the list"
+            },
+            "leadPhone": {
+              "type": "string",
+              "pattern": "^[\\d\\s\\-\\(\\)\\+]+$",
+              "description": "Phone number for lead lookup"
+            },
+            "customSelectors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "CSS selectors for custom tasks"
+            }
+          },
+          "additionalProperties": true
+        }
+      }
+    },
+    "authentication": {
+      "type": "object",
+      "description": "Authentication credentials",
+      "required": ["username", "password"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cox Bridge ID username"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cox Bridge ID password"
+        },
+        "otpWebhookUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Webhook URL for 2FA code retrieval"
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "description": "Agent capabilities configuration",
+      "properties": {
+        "useVision": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable AI vision capabilities"
+        },
+        "maxClicks": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10,
+          "description": "Maximum number of clicks allowed"
+        },
+        "screenshotDebug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Take screenshots for debugging"
+        },
+        "sessionPersistence": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable session persistence"
+        },
+        "keepAlive": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable session keep-alive"
+        },
+        "keepAliveInterval": {
+          "type": "integer",
+          "minimum": 60000,
+          "default": 300000,
+          "description": "Keep-alive interval in milliseconds"
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "description": "Output configuration",
+      "properties": {
+        "directory": {
+          "type": "string",
+          "default": "./downloads",
+          "description": "Output directory for downloads"
+        },
+        "emailTo": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address for report delivery"
+        },
+        "webhookUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Webhook URL for notifications"
+        }
+      }
+    },
+    "timeouts": {
+      "type": "object",
+      "description": "Timeout configuration in milliseconds",
+      "properties": {
+        "navigation": {
+          "type": "integer",
+          "minimum": 1000,
+          "default": 30000,
+          "description": "Navigation timeout"
+        },
+        "element": {
+          "type": "integer",
+          "minimum": 1000,
+          "default": 10000,
+          "description": "Element selection timeout"
+        },
+        "download": {
+          "type": "integer",
+          "minimum": 1000,
+          "default": 60000,
+          "description": "Download timeout"
+        }
+      }
+    },
+    "browser": {
+      "type": "object",
+      "description": "Browser configuration",
+      "properties": {
+        "headless": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run browser in headless mode"
+        },
+        "viewport": {
+          "type": "object",
+          "properties": {
+            "width": {
+              "type": "integer",
+              "minimum": 800,
+              "default": 1920
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 600,
+              "default": 1080
+            }
+          }
+        },
+        "userAgent": {
+          "type": "string",
+          "description": "Custom user agent string"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "target": {
+        "url": "https://provision.vauto.com",
+        "taskType": "report",
+        "parameters": {
+          "reportPosition": 1
+        }
+      },
+      "authentication": {
+        "username": "user@example.com",
+        "password": "password123"
+      },
+      "capabilities": {
+        "useVision": false
+      }
+    },
+    {
+      "target": {
+        "url": "https://vinsolutions.com/leads",
+        "taskType": "lead-activity",
+        "parameters": {
+          "leadPhone": "555-123-4567"
+        }
+      },
+      "authentication": {
+        "username": "user@example.com",
+        "password": "password123",
+        "otpWebhookUrl": "https://webhook.site/xxx"
+      },
+      "capabilities": {
+        "useVision": true,
+        "screenshotDebug": true
+      },
+      "output": {
+        "emailTo": "reports@example.com"
+      }
+    }
+  ]
+}

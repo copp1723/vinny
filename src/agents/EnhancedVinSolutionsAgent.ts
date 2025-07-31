@@ -53,10 +53,10 @@ export class EnhancedVinSolutionsAgent {
       const filename = `${timestamp}_VinSolutions_${suggestedFilename}`;
       const downloadPath = path.join('./downloads', filename);
       
-      await fs.ensureDir('./downloads');
+      await this.fileManager.ensureDirectory('./downloads');
       await download.saveAs(downloadPath);
       
-      this.logger.info(`Downloaded file: ${filename}`, { path: downloadPath });
+      this.logger.info(`Downloaded file: ${filename} at ${downloadPath}`);
     });
 
     this.logger.info('Enhanced VinSolutions agent initialized');
@@ -69,7 +69,7 @@ export class EnhancedVinSolutionsAgent {
     const filename = `${timestamp}_${name}.png`;
     const screenshotPath = path.join('./screenshots', filename);
     
-    await fs.ensureDir('./screenshots');
+    await this.fileManager.ensureDirectory('./screenshots');
     await this.page.screenshot({ path: screenshotPath, fullPage: true });
     
     this.screenshots.push(screenshotPath);
@@ -389,4 +389,3 @@ export class EnhancedVinSolutionsAgent {
     this.logger.info('Enhanced VinSolutions agent closed');
   }
 }
-

@@ -117,16 +117,29 @@ export class CompleteVinSolutionsAgent {
   }
 
   async extractLeadSourceROI(): Promise<ExtractionResult> {
+    // Default report name - can be made configurable via UI
+    return await this.extractReport({ reportName: 'Lead Source ROI' });
+  }
+
+  async extractReport(request: { reportName?: string; reportIndex?: number }): Promise<ExtractionResult> {
     const startTime = Date.now();
     const screenshots: string[] = [];
     
+    // Validate request
+    if (!request.reportName && !request.reportIndex) {
+      throw new Error('Must provide either reportName or reportIndex');
+    }
+    
+    // Use report name or index-based description
+    const reportIdentifier = request.reportName || `Report #${request.reportIndex}`;
+    
     try {
-      this.logger.info('Starting Lead Source ROI extraction');
+      this.logger.info(`Starting ${reportIdentifier} extraction`);
       
       // Send start notification
       await this.mailgunService.sendNotificationEmail(
         'VinSolutions Extraction Started',
-        'The AI agent has begun extracting the Lead Source ROI report from VinSolutions. You will receive another email when the process is complete.',
+        `The AI agent has begun extracting "${reportIdentifier}" from VinSolutions. You will receive another email when the process is complete.`,
         this.config.reportRecipients
       );
 
@@ -146,18 +159,18 @@ export class CompleteVinSolutionsAgent {
       // Step 2: Login with AI assistance
       await this.performLogin(screenshots);
 
-      // Step 3: Navigate to reports
+      // Step 3: Navigate to reports and favorites
       await this.navigateToReports(screenshots);
 
-      // Step 4: Find and extract Lead Source ROI
-      const reportPath = await this.extractReport(screenshots);
+      // Step 4: Find and extract the specified report from Favorites
+      const reportPath = await this.extractReportFromFavorites(request, screenshots);
 
       const executionTime = Date.now() - startTime;
       
       const result: ExtractionResult = {
         success: true,
         reportPath,
-        reportName: 'Lead Source ROI',
+        reportName: reportIdentifier,
         platformName: 'VinSolutions',
         extractedAt: new Date().toISOString(),
         executionTime,
@@ -167,7 +180,7 @@ export class CompleteVinSolutionsAgent {
       // Send success notification and report
       await this.sendSuccessNotification(result);
       
-      this.logger.info('Lead Source ROI extraction completed successfully', {
+      this.logger.info(`${reportIdentifier} extraction completed successfully`, {
         executionTime,
         reportPath
       });
@@ -177,14 +190,14 @@ export class CompleteVinSolutionsAgent {
     } catch (error: any) {
       const executionTime = Date.now() - startTime;
       
-      this.logger.error('Lead Source ROI extraction failed', { 
+      this.logger.error(`${reportIdentifier} extraction failed`, {
         error: error.message,
-        executionTime 
+        executionTime
       });
 
       const result: ExtractionResult = {
         success: false,
-        reportName: 'Lead Source ROI',
+        reportName: reportIdentifier,
         platformName: 'VinSolutions',
         extractedAt: new Date().toISOString(),
         executionTime,
@@ -377,48 +390,159 @@ export class CompleteVinSolutionsAgent {
     }
     
     await this.takeScreenshot(screenshots, 'reports-page');
+    
+    // ALWAYS navigate to Favorites tab - this is where saved reports are located
+    await this.navigateToFavorites(screenshots);
   }
 
-  private async extractReport(screenshots: string[]): Promise<string> {
-    this.logger.info('Extracting Lead Source ROI report');
+  private async navigateToFavorites(screenshots: string[]): Promise<void> {
+    this.logger.info('Navigating to Favorites tab (where saved reports are located)');
     
-    // Look for Lead Source ROI in the reports list
-    await this.page!.waitForSelector('text=Lead Source ROI', { timeout: 15000 });
-    await this.takeScreenshot(screenshots, 'reports-list');
-    
-    // Click on Lead Source ROI report
-    await this.page!.click('text=Lead Source ROI');
-    await this.page!.waitForTimeout(5000);
-    await this.takeScreenshot(screenshots, 'report-opened');
-    
-    // Set up download handling
-    const downloadPromise = this.page!.waitForEvent('download');
-    
-    // Click Download button
-    const downloadSelectors = [
-      'text=Download',
-      'button:has-text("Download")',
-      '[data-testid*="download"]',
-      'a:has-text("Download")'
+    // Look for Favorites tab
+    const favoritesSelectors = [
+      'text=Favorites',
+      'text=Favourite',
+      '[data-testid*="favorite"]',
+      'a:has-text("Favorites")',
+      'button:has-text("Favorites")',
+      'tab:has-text("Favorites")',
+      '[role="tab"]:has-text("Favorites")'
     ];
     
-    for (const selector of downloadSelectors) {
+    let favoritesFound = false;
+    for (const selector of favoritesSelectors) {
       const count = await this.page!.locator(selector).count();
       if (count > 0) {
         await this.page!.click(selector);
+        await this.page!.waitForTimeout(3000);
+        favoritesFound = true;
+        this.logger.info(`Successfully clicked Favorites tab using selector: ${selector}`);
         break;
       }
     }
     
-    // Wait for download to complete
-    const download = await downloadPromise;
-    const downloadPath = path.join(this.config.downloadDir, `lead-source-roi-${Date.now()}.xlsx`);
-    await download.saveAs(downloadPath);
+    if (!favoritesFound) {
+      this.logger.warn('Favorites tab not found, reports may be in main reports list');
+      await this.takeScreenshot(screenshots, 'favorites-tab-not-found');
+    } else {
+      await this.takeScreenshot(screenshots, 'favorites-tab-loaded');
+    }
+  }
+
+  private async extractReportFromFavorites(request: { reportName?: string; reportIndex?: number }, screenshots: string[]): Promise<string> {
+    const { reportName, reportIndex } = request;
+    const reportIdentifier = reportName || `Report #${reportIndex}`;
     
-    await this.takeScreenshot(screenshots, 'download-completed');
+    this.logger.info(`Extracting "${reportIdentifier}" from Favorites tab`);
     
-    this.logger.info('Report downloaded successfully', { downloadPath });
-    return downloadPath;
+    let reportLink;
+    
+    try {
+      if (reportIndex) {
+        // Option 1: Select by position (1-based index)
+        this.logger.info(`Selecting report by position: ${reportIndex}`);
+        
+        // Get all report links in favorites
+        const allReportLinks = this.page!.locator('.favorites-list a, #favorites a, [data-testid="favorites"] a, [role="list"] a');
+        const linkCount = await allReportLinks.count();
+        
+        if (linkCount === 0) {
+          // Try broader selectors if specific favorites selectors don't work
+          const broadLinks = this.page!.locator('a[href*="report"], a[href*="Report"], a:has-text("report")', { hasText: /.+/ });
+          reportLink = broadLinks.nth(reportIndex - 1);
+        } else if (reportIndex > linkCount) {
+          throw new Error(`Report index ${reportIndex} exceeds available reports (found ${linkCount} reports)`);
+        } else {
+          reportLink = allReportLinks.nth(reportIndex - 1);
+        }
+        
+        // Wait for the nth link to be visible
+        await reportLink.waitFor({ state: 'visible', timeout: 15000 });
+        
+      } else if (reportName) {
+        // Option 2: Select by name (existing logic)
+        reportLink = this.page!.getByRole('link', { name: reportName });
+        await reportLink.waitFor({ state: 'visible', timeout: 15000 });
+      }
+      
+      await this.takeScreenshot(screenshots, 'favorites-reports-list');
+      
+      const [download] = await Promise.all([
+        this.page!.waitForEvent('download'),   // capture the download
+        reportLink!.click(),                    // trigger it
+      ]);
+      
+      // Save the download with sanitized filename
+      const baseName = reportName || `report-position-${reportIndex}`;
+      const sanitizedName = baseName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      const downloadPath = path.join(this.config.downloadDir, `${sanitizedName}-${Date.now()}.xlsx`);
+      await download.saveAs(downloadPath);
+      
+      await this.takeScreenshot(screenshots, 'download-completed');
+      this.logger.info(`${reportIdentifier} downloaded to: ${downloadPath}`);
+      return downloadPath;
+      
+    } catch (error: any) {
+      // If selecting by index failed, don't try name-based fallbacks
+      if (reportIndex) {
+        this.logger.error(`Failed to select report at position ${reportIndex}`, { error: error.message });
+        await this.takeScreenshot(screenshots, 'index-selection-failed');
+        throw new Error(`Could not select report at position ${reportIndex} in Favorites. Error: ${error.message}`);
+      }
+      
+      // For name-based selection, continue with existing fallback strategies
+      this.logger.warn(`Primary selector failed for "${reportName}", trying fallback strategies`, { error: error.message });
+      await this.takeScreenshot(screenshots, 'primary-selector-failed');
+      
+      // Fallback: Try href-based matching
+      try {
+        const fallbackLink = this.page!.locator(`a[href*="${encodeURIComponent(reportName!)}"]`);
+        await fallbackLink.waitFor({ state: 'visible', timeout: 10000 });
+        
+        const [download] = await Promise.all([
+          this.page!.waitForEvent('download'),
+          fallbackLink.click(),
+        ]);
+        
+        const sanitizedName = reportName!.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const downloadPath = path.join(this.config.downloadDir, `${sanitizedName}-${Date.now()}.xlsx`);
+        await download.saveAs(downloadPath);
+        
+        await this.takeScreenshot(screenshots, 'fallback-download-completed');
+        this.logger.info(`Report "${reportName}" downloaded via fallback to: ${downloadPath}`);
+        return downloadPath;
+        
+      } catch (fallbackError: any) {
+        // Final fallback: Try partial text matching
+        try {
+          const keywords = reportName!.split(' ').filter(word => word.length > 2);
+          const keywordRegex = new RegExp(keywords.join('|'), 'i');
+          const partialLink = this.page!.getByRole('link', { name: keywordRegex });
+          await partialLink.waitFor({ state: 'visible', timeout: 10000 });
+          
+          const [download] = await Promise.all([
+            this.page!.waitForEvent('download'),
+            partialLink.click(),
+          ]);
+          
+          const sanitizedName = reportName!.toLowerCase().replace(/[^a-z0-9]/g, '-');
+          const downloadPath = path.join(this.config.downloadDir, `${sanitizedName}-${Date.now()}.xlsx`);
+          await download.saveAs(downloadPath);
+          
+          await this.takeScreenshot(screenshots, 'partial-match-download-completed');
+          this.logger.info(`Report "${reportName}" downloaded via partial match to: ${downloadPath}`);
+          return downloadPath;
+          
+        } catch (finalError: any) {
+          this.logger.error(`All selector strategies failed for "${reportName}"`, {
+            primaryError: error.message,
+            fallbackError: fallbackError.message,
+            finalError: finalError.message
+          });
+          throw new Error(`Could not find report "${reportName}" in Favorites after trying all strategies. Make sure the report is saved in your Favorites tab.`);
+        }
+      }
+    }
   }
 
   private async sendSuccessNotification(result: ExtractionResult): Promise<void> {

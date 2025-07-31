@@ -9,6 +9,7 @@ import {
 } from '../types';
 import { Logger } from '../utils/Logger';
 import { NotificationService } from './NotificationService';
+import { FileManager } from '../utils/FileManager';
 
 export class ReportExtractor {
   private browser: Browser | null = null;
@@ -17,6 +18,7 @@ export class ReportExtractor {
   private notificationService: NotificationService;
   private config: AgentConfig;
   private isRunning = false;
+  private fileManager = new FileManager();
 
   constructor(config: AgentConfig) {
     this.config = config;
@@ -47,18 +49,39 @@ export class ReportExtractor {
       this.agent = new VinSolutionsAgent(this.config);
       await this.agent.initialize(this.browser);
 
+      // Ensure storage dirs exist and clean old files
+      this.fileManager.ensureDirectory(this.config.outputDir || './downloads');
+      this.fileManager.ensureDirectory(this.config.screenshotDir || './screenshots');
+
       this.logger.info('Report Extractor initialized successfully');
     } catch (error) {
-      this.logger.error('Failed to initialize Report Extractor', { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Failed to initialize Report Extractor', { error: err.message });
       throw error;
     }
   }
 
   async extractReport(
     credentials: PlatformCredentials,
-    request: ReportRequest,
+    request: ReportRequest & { reportIndex?: number },
     maxRetries: number = 3
   ): Promise<ExtractionResult> {
+    const startTime = Date.now();
+
+    const { reportName, reportIndex } = request;
+
+    // Require at least one selector method
+    if (!reportName && (reportIndex === undefined || reportIndex < 1)) {
+      throw new Error('Must provide either reportName or a 1-based reportIndex');
+    }
+
+    // Log which strategy will run
+    if (reportIndex) {
+      this.logger.info(`Selecting report by position: #${reportIndex}`);
+    } else {
+      this.logger.info(`Selecting report by name: "${reportName}"`);
+    }
+
     if (!this.agent) {
       throw new Error('Report Extractor not initialized');
     }
@@ -68,7 +91,11 @@ export class ReportExtractor {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        this.logger.info(`Extraction attempt ${attempt}/${maxRetries} for report: ${request.reportName}`);
+        this.logger.info(
+          `Extraction attempt ${attempt}/${maxRetries} for ${
+            reportIndex ? `reportIndex=${reportIndex}` : `reportName="${reportName}"`
+          }`
+        );
 
         // Step 1: Login
         const loginSuccess = await this.agent.login(credentials);
@@ -88,6 +115,8 @@ export class ReportExtractor {
         if (result.success) {
           this.logger.info(`Successfully extracted report: ${request.reportName}`, result);
           
+          result.executionTime = Date.now() - startTime;
+
           // Send success notification
           await this.notificationService.sendSuccessNotification(result);
           
@@ -98,7 +127,8 @@ export class ReportExtractor {
         }
 
       } catch (error) {
-        lastError = error.message;
+        const err = error instanceof Error ? error : new Error(String(error));
+        lastError = err.message;
         this.logger.warn(`Extraction attempt ${attempt} failed: ${lastError}`);
 
         if (attempt < maxRetries) {
@@ -127,7 +157,7 @@ export class ReportExtractor {
       },
       error: `All ${maxRetries} attempts failed. Last error: ${lastError}`,
       attempt: maxRetries,
-      executionTime: 0
+      executionTime: Date.now() - startTime
     };
 
     this.logger.error(`Failed to extract report after ${maxRetries} attempts: ${request.reportName}`, failureResult);
@@ -153,7 +183,8 @@ export class ReportExtractor {
         // Small delay between reports to avoid overwhelming the server
         await this.sleep(2000);
       } catch (error) {
-        this.logger.error(`Failed to extract report: ${request.reportName}`, { error: error.message });
+        const err = error instanceof Error ? error : new Error(String(error));
+        this.logger.error(`Failed to extract report: ${request.reportName}`, { error: err.message });
         results.push({
           success: false,
           reportName: request.reportName,
@@ -161,7 +192,7 @@ export class ReportExtractor {
             extractedAt: new Date().toISOString(),
             platform: 'vinsolutions',
           },
-          error: error.message,
+          error: err.message,
           attempt: 1,
           executionTime: 0
         });
@@ -191,12 +222,12 @@ export class ReportExtractor {
 
   private async checkStorageHealth(): Promise<boolean> {
     try {
-      const outputDir = process.env.REPORTS_OUTPUT_DIR || './downloads';
-      const fs = await import('fs-extra');
-      await fs.ensureDir(outputDir);
+      const outputDir = this.config.outputDir || './downloads';
+      await this.fileManager.ensureDirectory(outputDir);
       return true;
     } catch (error) {
-      this.logger.error('Storage health check failed', { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Storage health check failed', { error: err.message });
       return false;
     }
   }
@@ -208,7 +239,8 @@ export class ReportExtractor {
       await dns.resolve('google.com');
       return true;
     } catch (error) {
-      this.logger.error('Network health check failed', { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Network health check failed', { error: err.message });
       return false;
     }
   }
@@ -234,7 +266,8 @@ export class ReportExtractor {
       this.isRunning = false;
       this.logger.info('Report Extractor shutdown complete');
     } catch (error) {
-      this.logger.error('Error during shutdown', { error: error.message });
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error('Error during shutdown', { error: err.message });
     }
   }
 
@@ -245,4 +278,3 @@ export class ReportExtractor {
     };
   }
 }
-

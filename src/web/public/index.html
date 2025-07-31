@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VinSolutions Report Extractor</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .card { background: white; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 4px; font-weight: 500; }
+        input, select, textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #007bff; }
+        .error { color: #dc3545; font-size: 12px; margin-top: 4px; }
+        .btn { padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .table th { background: #f8f9fa; font-weight: 500; }
+        .status-success { color: #28a745; }
+        .status-failed { color: #dc3545; }
+        .status-running { color: #ffc107; }
+        .status-scheduled { color: #6c757d; }
+        .toast { position: fixed; top: 20px; right: 20px; padding: 12px 16px; border-radius: 4px; color: white; z-index: 1000; }
+        .toast-success { background: #28a745; }
+        .toast-error { background: #dc3545; }
+        .advanced { border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin-top: 8px; }
+        .advanced-toggle { cursor: pointer; color: #007bff; text-decoration: underline; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function Dashboard() {
+            const [formData, setFormData] = useState({
+                selectionMethod: 'name',
+                reportName: '',
+                reportIndex: '',
+                email: '',
+                scheduleType: 'once',
+                datetime: '',
+                recurring: 'daily',
+                format: 'XLSX',
+                timeout: 30000,
+                retries: 3,
+                notifications: true
+            });
+            const [errors, setErrors] = useState({});
+            const [jobs, setJobs] = useState([]);
+            const [history, setHistory] = useState([]);
+            const [toast, setToast] = useState(null);
+            const [showAdvanced, setShowAdvanced] = useState(false);
+
+            useEffect(() => {
+                fetchJobs();
+                fetchHistory();
+            }, []);
+
+            const fetchJobs = async () => {
+                try {
+                    const response = await fetch('/api/jobs');
+                    const data = await response.json();
+                    setJobs(data);
+                } catch (error) {
+                    showToast('Failed to fetch jobs', 'error');
+                }
+            };
+
+            const fetchHistory = async () => {
+                try {
+                    const response = await fetch('/api/history');
+                    const data = await response.json();
+                    setHistory(data);
+                } catch (error) {
+                    showToast('Failed to fetch history', 'error');
+                }
+            };
+
+            const showToast = (message, type) => {
+                setToast({ message, type });
+                setTimeout(() => setToast(null), 3000);
+            };
+
+            const validateForm = () => {
+                const newErrors = {};
+                if (formData.selectionMethod === 'name' && !formData.reportName.trim()) {
+                    newErrors.reportName = 'Report name is required';
+                }
+                if (formData.selectionMethod === 'index' && !formData.reportIndex) {
+                    newErrors.reportIndex = 'Report position is required';
+                }
+                if (!formData.email.trim()) newErrors.email = 'Email is required';
+                else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email format';
+                if (formData.scheduleType === 'once' && !formData.datetime) newErrors.datetime = 'Date and time required';
+                
+                setErrors(newErrors);
+                return Object.keys(newErrors).length === 0;
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                if (!validateForm()) return;
+
+                const schedule = formData.scheduleType === 'once' 
+                    ? { type: 'once', datetime: formData.datetime }
+                    : { type: formData.recurring };
+
+                const reportRequest = formData.selectionMethod === 'index'
+                    ? { reportIndex: parseInt(formData.reportIndex) }
+                    : { reportName: formData.reportName };
+
+                try {
+                    const response = await fetch('/api/extract-report', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            ...reportRequest,
+                            email: formData.email,
+                            schedule,
+                            format: formData.format,
+                            timeout: formData.timeout,
+                            retries: formData.retries
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showToast('Extraction scheduled successfully', 'success');
+                        setFormData({ ...formData, reportName: '', reportIndex: '', email: '' });
+                        fetchJobs();
+                    } else {
+                        showToast('Failed to schedule extraction', 'error');
+                    }
+                } catch (error) {
+                    showToast('Failed to schedule extraction', 'error');
+                }
+            };
+
+            const runJob = async (jobId) => {
+                try {
+                    await fetch(`/api/jobs/${jobId}/run`, { method: 'POST' });
+                    showToast('Job started', 'success');
+                    setTimeout(() => { fetchJobs(); fetchHistory(); }, 2000);
+                } catch (error) {
+                    showToast('Failed to run job', 'error');
+                }
+            };
+
+            const deleteJob = async (jobId) => {
+                try {
+                    await fetch(`/api/jobs/${jobId}`, { method: 'DELETE' });
+                    showToast('Job deleted', 'success');
+                    fetchJobs();
+                } catch (error) {
+                    showToast('Failed to delete job', 'error');
+                }
+            };
+
+            const formatDate = (dateString) => {
+                return new Date(dateString).toLocaleString();
+            };
+
+            return (
+                <div className="container">
+                    <h1 style={{ marginBottom: '24px', color: '#333' }}>VinSolutions Report Extractor</h1>
+                    
+                    <div className="card">
+                        <h2 style={{ marginBottom: '16px' }}>Schedule Report Extraction</h2>
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Report Selection Method</label>
+                                <select
+                                    value={formData.selectionMethod || 'name'}
+                                    onChange={(e) => setFormData({...formData, selectionMethod: e.target.value, reportName: '', reportIndex: ''})}
+                                >
+                                    <option value="name">By Name</option>
+                                    <option value="index">By Position</option>
+                                </select>
+                            </div>
+
+                            <div className="grid">
+                                {formData.selectionMethod === 'index' ? (
+                                    <div className="form-group">
+                                        <label htmlFor="reportIndex">Report Position *</label>
+                                        <select
+                                            id="reportIndex"
+                                            value={formData.reportIndex}
+                                            onChange={(e) => setFormData({...formData, reportIndex: e.target.value})}
+                                        >
+                                            <option value="">Select position...</option>
+                                            <option value="1">1st report (top)</option>
+                                            <option value="2">2nd report</option>
+                                            <option value="3">3rd report</option>
+                                        </select>
+                                        {errors.reportIndex && <div className="error">{errors.reportIndex}</div>}
+                                        <small style={{ color: '#666' }}>Select by position in your Favorites list</small>
+                                    </div>
+                                ) : (
+                                    <div className="form-group">
+                                        <label htmlFor="reportName">Report Name *</label>
+                                        <input
+                                            id="reportName"
+                                            type="text"
+                                            placeholder="e.g. Lead Source ROI"
+                                            value={formData.reportName}
+                                            onChange={(e) => setFormData({...formData, reportName: e.target.value})}
+                                        />
+                                        {errors.reportName && <div className="error">{errors.reportName}</div>}
+                                        <small style={{ color: '#666' }}>Type the exact name as it appears in your Favorites tab</small>
+                                    </div>
+                                )}
+
+                                <div className="form-group">
+                                    <label htmlFor="email">Email Address *</label>
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        placeholder="your@email.com"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    />
+                                    {errors.email && <div className="error">{errors.email}</div>}
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Schedule</label>
+                                <select
+                                    value={formData.scheduleType}
+                                    onChange={(e) => setFormData({...formData, scheduleType: e.target.value})}
+                                >
+                                    <option value="once">One-time</option>
+                                    <option value="recurring">Recurring</option>
+                                </select>
+                            </div>
+
+                            {formData.scheduleType === 'once' && (
+                                <div className="form-group">
+                                    <label htmlFor="datetime">Date & Time *</label>
+                                    <input
+                                        id="datetime"
+                                        type="datetime-local"
+                                        value={formData.datetime}
+                                        onChange={(e) => setFormData({...formData, datetime: e.target.value})}
+                                    />
+                                    {errors.datetime && <div className="error">{errors.datetime}</div>}
+                                </div>
+                            )}
+
+                            {formData.scheduleType === 'recurring' && (
+                                <div className="form-group">
+                                    <label>Frequency</label>
+                                    <select
+                                        value={formData.recurring}
+                                        onChange={(e) => setFormData({...formData, recurring: e.target.value})}
+                                    >
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                            )}
+
+                            <div className="form-group">
+                                <span 
+                                    className="advanced-toggle"
+                                    onClick={() => setShowAdvanced(!showAdvanced)}
+                                >
+                                    {showAdvanced ? '▼' : '▶'} Advanced Options
+                                </span>
+                                {showAdvanced && (
+                                    <div className="advanced">
+                                        <div className="grid">
+                                            <div className="form-group">
+                                                <label>Output Format</label>
+                                                <select
+                                                    value={formData.format}
+                                                    onChange={(e) => setFormData({...formData, format: e.target.value})}
+                                                >
+                                                    <option value="XLSX">XLSX</option>
+                                                    <option value="CSV">CSV</option>
+                                                    <option value="PDF">PDF</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Timeout (seconds)</label>
+                                                <input
+                                                    type="number"
+                                                    value={formData.timeout / 1000}
+                                                    onChange={(e) => setFormData({...formData, timeout: e.target.value * 1000})}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <button 
+                                type="submit" 
+                                className="btn btn-primary"
+                                disabled={(!formData.reportName && !formData.reportIndex) || !formData.email}
+                            >
+                                Schedule Extraction
+                            </button>
+                        </form>
+                    </div>
+
+                    <div className="card">
+                        <h2 style={{ marginBottom: '16px' }}>Upcoming Jobs</h2>
+                        {jobs.length === 0 ? (
+                            <p style={{ color: '#666' }}>No scheduled jobs</p>
+                        ) : (
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Report</th>
+                                        <th>Email</th>
+                                        <th>Schedule</th>
+                                        <th>Next Run</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {jobs.map(job => (
+                                        <tr key={job.id}>
+                                            <td>
+                                                {job.reportIndex ? `Position ${job.reportIndex}` : job.reportName}
+                                                {job.reportIndex && <div style={{fontSize: '12px', color: '#666'}}>{job.reportName}</div>}
+                                            </td>
+                                            <td>{job.email}</td>
+                                            <td>{job.schedule.type}</td>
+                                            <td>{formatDate(job.nextRun)}</td>
+                                            <td>
+                                                <span className={`status-${job.status}`}>
+                                                    {job.status}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button 
+                                                    className="btn btn-secondary btn-sm"
+                                                    onClick={() => runJob(job.id)}
+                                                    style={{ marginRight: '8px' }}
+                                                >
+                                                    Run Now
+                                                </button>
+                                                <button 
+                                                    className="btn btn-danger btn-sm"
+                                                    onClick={() => deleteJob(job.id)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    <div className="card">
+                        <h2 style={{ marginBottom: '16px' }}>History</h2>
+                        {history.length === 0 ? (
+                            <p style={{ color: '#666' }}>No execution history</p>
+                        ) : (
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Report</th>
+                                        <th>Email</th>
+                                        <th>Result</th>
+                                        <th>Download</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {history.map(item => (
+                                        <tr key={item.id}>
+                                            <td>{formatDate(item.executedAt)}</td>
+                                            <td>{item.reportName}</td>
+                                            <td>{item.email}</td>
+                                            <td>
+                                                <span className={`status-${item.status}`}>
+                                                    {item.status === 'success' ? '✅' : '❌'} {item.status}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {item.downloadUrl && (
+                                                    <a href={item.downloadUrl} className="btn btn-secondary btn-sm">
+                                                        Download
+                                                    </a>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    {toast && (
+                        <div className={`toast toast-${toast.type}`}>
+                            {toast.message}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<Dashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>

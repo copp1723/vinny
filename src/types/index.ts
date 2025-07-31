@@ -28,6 +28,7 @@ export interface ExtractionResult {
     platform: string;
     fileSize?: number;
     recordCount?: number;
+    fileType?: string;
   };
   error?: string;
   attempt: number;
@@ -44,6 +45,8 @@ export interface AgentConfig {
     width: number;
     height: number;
   };
+  outputDir?: string;
+  screenshotDir?: string;
 }
 
 export interface PlatformAdapter {

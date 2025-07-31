@@ -1,0 +1,443 @@
+{"timestamp":"2025-07-11T02:01:18.680Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T02:01:18.682Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T02:01:18.988Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711020118.b4f84eecd1fe0b0b@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T02:01:18.989Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T02:01:19.007Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"browserType.launch: Executable doesn't exist at /Users/copp1723/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝","executionTime":325}
+{"timestamp":"2025-07-11T02:01:19.122Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711020119.482fe8102ac94793@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T02:01:19.123Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T02:01:19.122Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T02:02:22.131Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T02:02:22.135Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T02:02:22.353Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711020222.d0b92e2be7c01aaa@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T02:02:22.354Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T02:02:27.633Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T02:02:33.262Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T02:02:52.679Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to reports section"}
+{"timestamp":"2025-07-11T02:02:57.788Z","level":"info","context":"DemoVinSolutionsAgent","message":"Extracting Lead Source ROI report"}
+{"timestamp":"2025-07-11T02:03:12.799Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForSelector: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Lead Source ROI') to be visible\u001b[22m\n","executionTime":50663}
+{"timestamp":"2025-07-11T02:03:13.032Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711020312.f061c77a8221f2be@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T02:03:13.033Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T02:03:13.793Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T02:06:23.304Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T02:06:23.307Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T02:06:23.648Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711020623.6f442e7a8ff91791@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T02:06:23.649Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T02:06:25.576Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T02:06:30.984Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T02:06:50.384Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to reports section"}
+{"timestamp":"2025-07-11T02:06:55.517Z","level":"info","context":"DemoVinSolutionsAgent","message":"Extracting Lead Source ROI report"}
+{"timestamp":"2025-07-11T02:07:10.522Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForSelector: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Lead Source ROI') to be visible\u001b[22m\n","executionTime":47215}
+{"timestamp":"2025-07-11T02:07:10.779Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711020710.3b9847c01229fe90@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T02:07:10.780Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T02:07:11.020Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T02:12:20.436Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T02:12:20.438Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T02:12:20.813Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711021220.588b8c3a2e1de0b5@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T02:12:20.814Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T02:12:23.422Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T02:12:28.903Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T02:12:48.413Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to reports section"}
+{"timestamp":"2025-07-11T02:12:53.556Z","level":"info","context":"DemoVinSolutionsAgent","message":"Extracting Lead Source ROI report"}
+{"timestamp":"2025-07-11T02:13:08.562Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForSelector: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Lead Source ROI') to be visible\u001b[22m\n","executionTime":48124}
+{"timestamp":"2025-07-11T02:13:08.850Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711021308.6c26e10adef50fa8@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T02:13:08.851Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T02:13:09.326Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T02:19:05.658Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T02:19:05.661Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T02:19:05.850Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711021905.c5d93d4a0d375bd0@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T02:19:05.850Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T02:19:08.500Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T02:19:13.964Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T02:19:33.414Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to reports section"}
+{"timestamp":"2025-07-11T02:19:38.547Z","level":"info","context":"DemoVinSolutionsAgent","message":"Extracting Lead Source ROI report"}
+{"timestamp":"2025-07-11T02:19:53.554Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForSelector: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Lead Source ROI') to be visible\u001b[22m\n","executionTime":47893}
+{"timestamp":"2025-07-11T02:19:53.930Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711021953.0f6999febaf341d1@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T02:19:53.931Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T02:19:54.256Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T02:30:42.665Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T02:30:42.667Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T02:30:43.042Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711023042.303815af49a2534a@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T02:30:43.043Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T02:30:45.432Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T02:30:50.940Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T02:31:10.346Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to reports section"}
+{"timestamp":"2025-07-11T02:31:15.508Z","level":"info","context":"DemoVinSolutionsAgent","message":"Extracting Lead Source ROI report"}
+{"timestamp":"2025-07-11T02:31:30.518Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForSelector: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Lead Source ROI') to be visible\u001b[22m\n","executionTime":47850}
+{"timestamp":"2025-07-11T02:31:30.864Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711023130.66c716774a400a02@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T02:31:30.865Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T02:31:31.090Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T03:14:08.210Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T03:14:08.212Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T03:14:08.538Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711031408.1ca943f50e689893@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T03:14:08.538Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T03:14:16.537Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T03:14:23.236Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T03:14:43.513Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T03:14:43.584Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to reports section"}
+{"timestamp":"2025-07-11T03:14:48.746Z","level":"info","context":"DemoVinSolutionsAgent","message":"Extracting Lead Source ROI report"}
+{"timestamp":"2025-07-11T03:15:03.758Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForSelector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('text=Lead Source ROI') to be visible\n","executionTime":55545}
+{"timestamp":"2025-07-11T03:15:04.038Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711031504.80066234f57ef65e@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T03:15:04.038Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T03:15:04.806Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T03:21:30.150Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T03:21:30.152Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T03:21:30.729Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711032130.4bce4f7151587de0@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T03:21:30.729Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T03:21:33.279Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T03:21:38.655Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T03:21:58.071Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T03:21:58.129Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T03:21:58.195Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - DEMO MODE: Simulating email code retrieval"}
+{"timestamp":"2025-07-11T03:22:09.117Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T03:22:09.118Z","level":"info","context":"DemoVinSolutionsAgent","message":"DEMO: Simulating 2FA code retrieval from email..."}
+{"timestamp":"2025-07-11T03:22:09.398Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711032209.27edb0fea7460e61@universalsync.ai>","recipients":1,"subject":"✅ Demo: 2FA Code Simulation"}
+{"timestamp":"2025-07-11T03:22:09.399Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: Demo: 2FA Code Simulation","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T03:22:14.408Z","level":"info","context":"DemoVinSolutionsAgent","message":"DEMO: Using simulated 2FA code: 123456"}
+{"timestamp":"2025-07-11T03:22:22.513Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"page.waitForTimeout: Target page, context or browser has been closed"}
+{"timestamp":"2025-07-11T03:22:22.514Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForTimeout: Target page, context or browser has been closed","executionTime":52362}
+{"timestamp":"2025-07-11T03:22:22.841Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711032222.21bce9aaf62aa8ee@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T03:22:22.841Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T03:22:23.026Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T04:18:41.489Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T04:18:41.491Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T04:18:41.990Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711041842.d6994ca2ef8bc14d@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T04:18:41.990Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T04:18:46.105Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T04:18:52.111Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T04:19:11.595Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T04:19:11.645Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T04:19:11.684Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T04:19:22.562Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T04:19:22.563Z","level":"warn","context":"DemoVinSolutionsAgent","message":"No webhook URL configured, falling back to simulated 2FA code"}
+{"timestamp":"2025-07-11T04:19:22.929Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711041922.5bca84f8abf28d05@universalsync.ai>","recipients":1,"subject":"✅ Warning: Using Simulated 2FA Code"}
+{"timestamp":"2025-07-11T04:19:22.929Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: Warning: Using Simulated 2FA Code","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T04:19:24.950Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code entered successfully"}
+{"timestamp":"2025-07-11T04:19:27.066Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code submitted"}
+{"timestamp":"2025-07-11T04:19:35.143Z","level":"error","context":"DemoVinSolutionsAgent","message":"Still on 2FA screen after all attempts"}
+{"timestamp":"2025-07-11T04:19:35.186Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"Failed to complete 2FA process - still on authentication screen"}
+{"timestamp":"2025-07-11T04:19:35.186Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Failed to complete 2FA process - still on authentication screen","executionTime":53695}
+{"timestamp":"2025-07-11T04:19:35.507Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711041935.b3dbfbf0fb9ff497@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T04:19:35.507Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T04:19:36.348Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T04:19:38.873Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T04:19:38.875Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T04:19:39.192Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711041939.7046ec9a90c4bb0c@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T04:19:39.192Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T04:19:41.123Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T04:19:46.430Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T04:20:05.834Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T04:20:05.878Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T04:20:05.916Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T04:20:16.776Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T04:20:16.780Z","level":"warn","context":"DemoVinSolutionsAgent","message":"No webhook URL configured, falling back to simulated 2FA code"}
+{"timestamp":"2025-07-11T04:20:17.181Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711042017.220e723027d6968e@universalsync.ai>","recipients":1,"subject":"✅ Warning: Using Simulated 2FA Code"}
+{"timestamp":"2025-07-11T04:20:17.182Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: Warning: Using Simulated 2FA Code","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T04:20:19.203Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code entered successfully"}
+{"timestamp":"2025-07-11T04:20:21.301Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code submitted"}
+{"timestamp":"2025-07-11T04:20:21.305Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"page.waitForTimeout: Target page, context or browser has been closed"}
+{"timestamp":"2025-07-11T04:20:21.305Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForTimeout: Target page, context or browser has been closed","executionTime":42430}
+{"timestamp":"2025-07-11T04:20:21.493Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711042021.5049c0cd2097fd23@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T04:20:21.494Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T04:20:23.068Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T04:28:54.641Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T04:28:54.645Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T04:28:55.427Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711042855.26671e02ea13fbfe@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T04:28:55.430Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T04:28:59.526Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T04:29:07.111Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T04:29:26.671Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T04:29:26.727Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T04:29:26.778Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T04:29:38.598Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T04:29:38.599Z","level":"warn","context":"DemoVinSolutionsAgent","message":"No webhook URL configured, falling back to simulated 2FA code"}
+{"timestamp":"2025-07-11T04:29:39.020Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711042939.ad2f20dc0d7dd986@universalsync.ai>","recipients":1,"subject":"✅ Warning: Using Simulated 2FA Code"}
+{"timestamp":"2025-07-11T04:29:39.020Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: Warning: Using Simulated 2FA Code","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T04:29:41.087Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code entered successfully"}
+{"timestamp":"2025-07-11T04:29:43.221Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code submitted"}
+{"timestamp":"2025-07-11T04:29:43.543Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"page.waitForTimeout: Target page, context or browser has been closed"}
+{"timestamp":"2025-07-11T04:29:43.543Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForTimeout: Target page, context or browser has been closed","executionTime":48898}
+{"timestamp":"2025-07-11T04:29:43.660Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711042943.e01eb6d7705e0f90@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T04:29:43.661Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T04:29:44.695Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T04:51:35.835Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T04:51:35.841Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T04:51:36.324Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711045136.25496f6078fce905@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T04:51:36.325Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T04:51:42.468Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T04:51:48.969Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T04:52:08.908Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T04:52:08.977Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T04:52:09.028Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T04:52:19.902Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T04:52:20.121Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711045220.4f2c709493224c1a@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-11T04:52:20.123Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-11T04:52:20.122Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T04:52:35.922Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-11T04:52:35.967Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T04:52:40.972Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 2/5)"}
+{"timestamp":"2025-07-11T04:52:41.001Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T04:52:46.009Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 3/5)"}
+{"timestamp":"2025-07-11T04:52:46.065Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T04:52:51.074Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 4/5)"}
+{"timestamp":"2025-07-11T04:52:51.089Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T04:52:56.095Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 5/5)"}
+{"timestamp":"2025-07-11T04:52:56.149Z","level":"error","context":"DemoVinSolutionsAgent","message":"Failed to retrieve 2FA code from webhook after all attempts"}
+{"timestamp":"2025-07-11T04:52:56.279Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts"}
+{"timestamp":"2025-07-11T04:52:56.280Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts","executionTime":80439}
+{"timestamp":"2025-07-11T04:52:56.722Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711045256.5076de88f3d73844@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T04:52:56.724Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T04:52:58.644Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T05:00:04.663Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T05:00:04.666Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T05:00:05.099Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711050005.6f5cce0c2c83cd39@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T05:00:05.100Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:00:07.157Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T05:00:12.322Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T05:00:31.734Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T05:00:31.790Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T05:00:31.843Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T05:00:42.736Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T05:00:42.941Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711050042.db62adce1471ae12@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-11T05:00:42.948Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-11T05:00:42.946Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:00:58.062Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-11T05:00:58.136Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:01:03.141Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 2/5)"}
+{"timestamp":"2025-07-11T05:01:03.161Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:01:08.169Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 3/5)"}
+{"timestamp":"2025-07-11T05:01:08.188Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:01:13.194Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 4/5)"}
+{"timestamp":"2025-07-11T05:01:13.207Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:01:18.212Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 5/5)"}
+{"timestamp":"2025-07-11T05:01:18.225Z","level":"error","context":"DemoVinSolutionsAgent","message":"Failed to retrieve 2FA code from webhook after all attempts"}
+{"timestamp":"2025-07-11T05:01:18.337Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts"}
+{"timestamp":"2025-07-11T05:01:18.337Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts","executionTime":73671}
+{"timestamp":"2025-07-11T05:01:18.533Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711050118.0422ef570a9c3f28@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T05:01:18.533Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T05:01:19.170Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T05:15:18.034Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T05:15:18.047Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T05:15:18.551Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711051518.36a34b1b87d828dd@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T05:15:18.552Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:15:22.085Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T05:15:27.759Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T05:15:47.216Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T05:15:47.259Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T05:15:47.320Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T05:15:58.172Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T05:15:58.589Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711051558.70f23df1a5e408b3@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-11T05:15:58.593Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-11T05:15:58.593Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:16:13.679Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-11T05:16:13.710Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:16:18.716Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 2/5)"}
+{"timestamp":"2025-07-11T05:16:18.725Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:16:23.730Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 3/5)"}
+{"timestamp":"2025-07-11T05:16:23.746Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:16:28.752Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 4/5)"}
+{"timestamp":"2025-07-11T05:16:28.768Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:16:33.784Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 5/5)"}
+{"timestamp":"2025-07-11T05:16:33.835Z","level":"error","context":"DemoVinSolutionsAgent","message":"Failed to retrieve 2FA code from webhook after all attempts"}
+{"timestamp":"2025-07-11T05:16:34.111Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts"}
+{"timestamp":"2025-07-11T05:16:34.111Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts","executionTime":76064}
+{"timestamp":"2025-07-11T05:16:34.568Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711051634.426a1d7e0a0e363f@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T05:16:34.619Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T05:16:37.442Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T05:22:42.834Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T05:22:42.836Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T05:22:43.108Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711052243.c14878a8df320186@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T05:22:43.109Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:22:46.302Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T05:22:52.816Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T05:23:12.556Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T05:23:12.625Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T05:23:12.688Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T05:23:23.742Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T05:23:23.958Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711052323.254fa6bef61f8077@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-11T05:23:23.959Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-11T05:23:23.959Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:23:39.192Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-11T05:23:39.319Z","level":"info","context":"DemoVinSolutionsAgent","message":"Retrieved real 2FA code from webhook: 65****"}
+{"timestamp":"2025-07-11T05:23:41.338Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code entered successfully"}
+{"timestamp":"2025-07-11T05:23:43.475Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code submitted"}
+{"timestamp":"2025-07-11T05:23:51.585Z","level":"error","context":"DemoVinSolutionsAgent","message":"Still on 2FA screen after all attempts"}
+{"timestamp":"2025-07-11T05:23:51.632Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"Failed to complete 2FA process - still on authentication screen"}
+{"timestamp":"2025-07-11T05:23:51.632Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Failed to complete 2FA process - still on authentication screen","executionTime":68796}
+{"timestamp":"2025-07-11T05:23:51.775Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711052351.b44036d0b3d9ead6@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T05:23:51.776Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T05:23:51.966Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T05:37:01.152Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T05:37:01.154Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T05:37:01.622Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711053701.d1c5d1f2687a85b1@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T05:37:01.622Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:37:05.381Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T05:37:10.123Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T05:37:39.802Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code entry screen detected"}
+{"timestamp":"2025-07-11T05:37:39.866Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T05:37:40.415Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711053740.1a2369cfe5c527a5@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-11T05:37:40.416Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-11T05:37:40.416Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:37:55.487Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-11T05:37:55.669Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:38:00.677Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 2/5)"}
+{"timestamp":"2025-07-11T05:38:00.952Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:38:06.173Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 3/5)"}
+{"timestamp":"2025-07-11T05:38:06.197Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:38:11.208Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 4/5)"}
+{"timestamp":"2025-07-11T05:38:11.217Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-11T05:38:16.222Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 5/5)"}
+{"timestamp":"2025-07-11T05:38:16.240Z","level":"error","context":"DemoVinSolutionsAgent","message":"Failed to retrieve 2FA code from webhook after all attempts"}
+{"timestamp":"2025-07-11T05:38:16.388Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts"}
+{"timestamp":"2025-07-11T05:38:16.388Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts","executionTime":75234}
+{"timestamp":"2025-07-11T05:38:16.849Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711053816.8befe4a5c3e0cc95@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T05:38:16.849Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T05:38:17.280Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T05:45:35.877Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T05:45:35.887Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T05:45:36.277Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711054536.1f457e570d8c7d7b@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T05:45:36.278Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:45:40.417Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T05:45:45.882Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T05:46:15.598Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code entry screen detected"}
+{"timestamp":"2025-07-11T05:46:15.727Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T05:46:16.331Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711054616.2008ab2725627d62@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-11T05:46:16.338Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-11T05:46:16.337Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T05:46:31.505Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-11T05:46:33.919Z","level":"warn","context":"DemoVinSolutionsAgent","message":"Error retrieving code from webhook (attempt 1/5)","error":"Request failed with status code 404"}
+{"timestamp":"2025-07-11T05:46:38.927Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 2/5)"}
+{"timestamp":"2025-07-11T05:46:39.749Z","level":"warn","context":"DemoVinSolutionsAgent","message":"Error retrieving code from webhook (attempt 2/5)","error":"Request failed with status code 404"}
+{"timestamp":"2025-07-11T05:46:44.785Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 3/5)"}
+{"timestamp":"2025-07-11T05:46:45.166Z","level":"warn","context":"DemoVinSolutionsAgent","message":"Error retrieving code from webhook (attempt 3/5)","error":"Request failed with status code 404"}
+{"timestamp":"2025-07-11T05:46:50.184Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 4/5)"}
+{"timestamp":"2025-07-11T05:46:50.747Z","level":"warn","context":"DemoVinSolutionsAgent","message":"Error retrieving code from webhook (attempt 4/5)","error":"Request failed with status code 404"}
+{"timestamp":"2025-07-11T05:46:55.773Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 5/5)"}
+{"timestamp":"2025-07-11T05:46:56.239Z","level":"warn","context":"DemoVinSolutionsAgent","message":"Error retrieving code from webhook (attempt 5/5)","error":"Request failed with status code 404"}
+{"timestamp":"2025-07-11T05:46:56.242Z","level":"error","context":"DemoVinSolutionsAgent","message":"Failed to retrieve 2FA code from webhook after all attempts"}
+{"timestamp":"2025-07-11T05:46:57.646Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts"}
+{"timestamp":"2025-07-11T05:46:57.649Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts","executionTime":81762}
+{"timestamp":"2025-07-11T05:46:58.006Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711054657.828d16bf0d1c19c4@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T05:46:58.006Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T05:47:01.593Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T14:09:17.044Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T14:09:17.046Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T14:09:17.453Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711140917.93b9098fbb9cbfaa@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T14:09:17.454Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T14:09:21.108Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T14:09:25.526Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T14:09:44.963Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T14:09:45.003Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T14:09:45.057Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T14:09:55.940Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T14:09:57.249Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711140957.68acb107573fbd13@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-11T14:09:57.250Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-11T14:09:57.250Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T14:10:12.343Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-11T14:10:12.817Z","level":"info","context":"DemoVinSolutionsAgent","message":"Retrieved real 2FA code from webhook: 24****"}
+{"timestamp":"2025-07-11T14:10:14.827Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code entered successfully"}
+{"timestamp":"2025-07-11T14:10:16.929Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code submitted"}
+{"timestamp":"2025-07-11T14:10:25.072Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA authentication completed successfully"}
+{"timestamp":"2025-07-11T14:10:25.072Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to reports section"}
+{"timestamp":"2025-07-11T14:10:40.494Z","level":"info","context":"DemoVinSolutionsAgent","message":"Extracting Lead Source ROI report"}
+{"timestamp":"2025-07-11T14:10:55.502Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForSelector: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Lead Source ROI') to be visible\u001b[22m\n","executionTime":98455}
+{"timestamp":"2025-07-11T14:10:55.780Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711141055.d9650285854c26a9@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T14:10:55.780Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T14:10:56.030Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T14:45:28.598Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T14:45:28.601Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T14:45:28.917Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711144528.e76f8652cea45724@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T14:45:28.917Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T14:45:31.918Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T14:45:36.525Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T14:45:56.030Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T14:45:56.079Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T14:45:56.133Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T14:46:06.996Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T14:46:07.191Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711144607.c38492bf70341f0a@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-11T14:46:07.192Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-11T14:46:07.192Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T14:46:22.269Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-11T14:46:22.703Z","level":"info","context":"DemoVinSolutionsAgent","message":"Retrieved real 2FA code from webhook: 51****"}
+{"timestamp":"2025-07-11T14:46:24.735Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code entered successfully"}
+{"timestamp":"2025-07-11T14:46:26.850Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code submitted"}
+{"timestamp":"2025-07-11T14:46:34.961Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA authentication completed successfully"}
+{"timestamp":"2025-07-11T14:46:34.961Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to reports section"}
+{"timestamp":"2025-07-11T14:46:50.386Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to Favorites tab (where saved reports are located)"}
+{"timestamp":"2025-07-11T14:46:50.395Z","level":"warn","context":"DemoVinSolutionsAgent","message":"Favorites tab not found, reports may be in main reports list"}
+{"timestamp":"2025-07-11T14:46:50.452Z","level":"info","context":"DemoVinSolutionsAgent","message":"Extracting \"Lead Source ROI\" report from Favorites tab"}
+{"timestamp":"2025-07-11T14:47:05.461Z","level":"warn","context":"DemoVinSolutionsAgent","message":"Primary selector failed for \"Lead Source ROI\", trying fallback strategies","error":"locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: 'Lead Source ROI' }) to be visible\u001b[22m\n"}
+{"timestamp":"2025-07-11T14:47:25.567Z","level":"error","context":"DemoVinSolutionsAgent","message":"All selector strategies failed for \"Lead Source ROI\"","primaryError":"locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: 'Lead Source ROI' }) to be visible\u001b[22m\n","fallbackError":"locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a[href*=\"Lead%20Source%20ROI\"]') to be visible\u001b[22m\n","finalError":"locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: /Lead|Source|ROI/i }) to be visible\u001b[22m\n"}
+{"timestamp":"2025-07-11T14:47:25.571Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Could not find report \"Lead Source ROI\" in Favorites after trying all strategies. Make sure the report is saved in your Favorites tab.","executionTime":116970}
+{"timestamp":"2025-07-11T14:47:25.798Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711144725.4baa04272e3b3dca@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T14:47:25.798Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T14:47:26.873Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-11T16:22:28.418Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-11T16:22:28.420Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-11T16:22:28.908Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711162229.a71a10af533b8723@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-11T16:22:28.908Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T16:22:32.063Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-11T16:22:37.999Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-11T16:22:57.467Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-11T16:22:57.521Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-11T16:22:57.581Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-11T16:23:08.452Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-11T16:23:08.807Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711162309.d2bb6d8061bb949c@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-11T16:23:08.808Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-11T16:23:08.808Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-11T16:23:23.913Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-11T16:23:25.836Z","level":"info","context":"DemoVinSolutionsAgent","message":"Retrieved real 2FA code from webhook: 35****"}
+{"timestamp":"2025-07-11T16:23:27.999Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code entered successfully"}
+{"timestamp":"2025-07-11T16:23:30.193Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA code submitted"}
+{"timestamp":"2025-07-11T16:23:38.405Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA authentication completed successfully"}
+{"timestamp":"2025-07-11T16:23:38.406Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to reports section"}
+{"timestamp":"2025-07-11T16:23:53.951Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to Favorites tab (where saved reports are located)"}
+{"timestamp":"2025-07-11T16:23:53.972Z","level":"warn","context":"DemoVinSolutionsAgent","message":"Favorites tab not found, reports may be in main reports list"}
+{"timestamp":"2025-07-11T16:23:54.013Z","level":"info","context":"DemoVinSolutionsAgent","message":"Extracting \"Lead Source ROI\" from Favorites tab"}
+{"timestamp":"2025-07-11T16:24:09.028Z","level":"warn","context":"DemoVinSolutionsAgent","message":"Primary selector failed for \"Lead Source ROI\", trying fallback strategies","error":"locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: 'Lead Source ROI' }) to be visible\u001b[22m\n"}
+{"timestamp":"2025-07-11T16:24:29.140Z","level":"error","context":"DemoVinSolutionsAgent","message":"All selector strategies failed for \"Lead Source ROI\"","primaryError":"locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: 'Lead Source ROI' }) to be visible\u001b[22m\n","fallbackError":"locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a[href*=\"Lead%20Source%20ROI\"]') to be visible\u001b[22m\n","finalError":"locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: /Lead|Source|ROI/i }) to be visible\u001b[22m\n"}
+{"timestamp":"2025-07-11T16:24:29.143Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Could not find report \"Lead Source ROI\" in Favorites after trying all strategies. Make sure the report is saved in your Favorites tab.","executionTime":120722}
+{"timestamp":"2025-07-11T16:24:29.567Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250711162429.cc3ba3b5bf19ac1f@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-11T16:24:29.569Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-11T16:24:30.985Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-28T18:24:02.989Z","level":"error","context":"EmailService","message":"Failed to initialize email service","error":"Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials 586e51a60fabf-30712a71ffdsm1745637fac.0 - gsmtp"}
+{"timestamp":"2025-07-28T18:24:02.992Z","level":"error","context":"CompleteVinSolutionsAgent","message":"Failed to initialize agent","error":"Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials 586e51a60fabf-30712a71ffdsm1745637fac.0 - gsmtp"}
+{"timestamp":"2025-07-28T18:26:49.477Z","level":"error","context":"EmailService","message":"Failed to initialize email service","error":"Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials 006d021491bc7-61913f9e047sm994082eaf.13 - gsmtp"}
+{"timestamp":"2025-07-28T18:26:49.479Z","level":"error","context":"CompleteVinSolutionsAgent","message":"Failed to initialize agent","error":"Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials 006d021491bc7-61913f9e047sm994082eaf.13 - gsmtp"}
+{"timestamp":"2025-07-28T18:27:27.203Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-28T18:27:27.205Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-28T18:27:27.547Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250728182727.3f6cd0d9961e1152@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-28T18:27:27.548Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-28T18:27:28.584Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-28T18:27:33.100Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-28T18:27:49.331Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"page.waitForTimeout: Target page, context or browser has been closed","executionTime":22126}
+{"timestamp":"2025-07-28T18:27:49.598Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250728182749.0ff9ac8d9c3b0ca6@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-28T18:27:49.598Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-28T18:27:49.701Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}
+{"timestamp":"2025-07-28T18:29:33.232Z","level":"info","context":"DemoVinSolutionsAgent","message":"Demo VinSolutions Agent initialized successfully"}
+{"timestamp":"2025-07-28T18:29:33.233Z","level":"info","context":"DemoVinSolutionsAgent","message":"Starting Lead Source ROI extraction (DEMO MODE)"}
+{"timestamp":"2025-07-28T18:29:33.515Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250728182933.d3903b1dbdfc5847@universalsync.ai>","recipients":1,"subject":"✅ VinSolutions Extraction Started (Demo)"}
+{"timestamp":"2025-07-28T18:29:33.515Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Started (Demo)","isError":false,"recipients":1}
+{"timestamp":"2025-07-28T18:29:34.499Z","level":"info","context":"DemoVinSolutionsAgent","message":"Navigating to VinSolutions"}
+{"timestamp":"2025-07-28T18:29:37.626Z","level":"info","context":"DemoVinSolutionsAgent","message":"Performing login"}
+{"timestamp":"2025-07-28T18:29:56.959Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA screen detected"}
+{"timestamp":"2025-07-28T18:29:56.986Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA factor selection screen detected"}
+{"timestamp":"2025-07-28T18:29:57.026Z","level":"info","context":"DemoVinSolutionsAgent","message":"2FA detected - proceeding with email verification"}
+{"timestamp":"2025-07-28T18:30:07.814Z","level":"info","context":"DemoVinSolutionsAgent","message":"Successfully transitioned to code entry screen"}
+{"timestamp":"2025-07-28T18:30:08.085Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250728183008.0e463a5d3e1c2920@universalsync.ai>","recipients":1,"subject":"✅ 2FA Code Retrieval"}
+{"timestamp":"2025-07-28T18:30:08.086Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting for real 2FA code from webhook..."}
+{"timestamp":"2025-07-28T18:30:08.086Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: 2FA Code Retrieval","isError":false,"recipients":1}
+{"timestamp":"2025-07-28T18:30:23.151Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 1/5)"}
+{"timestamp":"2025-07-28T18:30:23.714Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-28T18:30:28.716Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 2/5)"}
+{"timestamp":"2025-07-28T18:30:28.858Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-28T18:30:33.860Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 3/5)"}
+{"timestamp":"2025-07-28T18:30:34.014Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-28T18:30:39.017Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 4/5)"}
+{"timestamp":"2025-07-28T18:30:39.157Z","level":"info","context":"DemoVinSolutionsAgent","message":"Waiting 5 seconds before next webhook check..."}
+{"timestamp":"2025-07-28T18:30:44.158Z","level":"info","context":"DemoVinSolutionsAgent","message":"Attempting to retrieve 2FA code from webhook (attempt 5/5)"}
+{"timestamp":"2025-07-28T18:30:44.366Z","level":"error","context":"DemoVinSolutionsAgent","message":"Failed to retrieve 2FA code from webhook after all attempts"}
+{"timestamp":"2025-07-28T18:30:44.418Z","level":"error","context":"DemoVinSolutionsAgent","message":"2FA handling failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts"}
+{"timestamp":"2025-07-28T18:30:44.418Z","level":"error","context":"DemoVinSolutionsAgent","message":"Lead Source ROI extraction failed","error":"Failed to retrieve 2FA code from webhook after multiple attempts","executionTime":71185}
+{"timestamp":"2025-07-28T18:30:44.694Z","level":"info","context":"MailgunService","message":"Email sent successfully via Mailgun","messageId":"<20250728183044.5fdec609f4eb84d9@universalsync.ai>","recipients":1,"subject":"❌ VinSolutions Extraction Failed"}
+{"timestamp":"2025-07-28T18:30:44.694Z","level":"info","context":"MailgunService","message":"Notification email sent via Mailgun: VinSolutions Extraction Failed","isError":true,"recipients":1}
+{"timestamp":"2025-07-28T18:30:44.850Z","level":"info","context":"DemoVinSolutionsAgent","message":"Agent cleanup completed"}

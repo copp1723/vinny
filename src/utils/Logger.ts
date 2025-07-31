@@ -1,4 +1,4 @@
-import winston from 'winston';
+import winston, { format } from 'winston';
 import path from 'path';
 import fs from 'fs-extra';
 
@@ -33,6 +33,7 @@ export class Logger {
     this.logger = winston.createLogger({
       level: process.env.LOG_LEVEL || 'info',
       format: logFormat,
+      defaultMeta: { context: this.context },
       transports: [
         new winston.transports.File({
           filename: process.env.LOG_FILE_PATH || path.join(logDir, 'vinny-agent.log'),
@@ -51,11 +52,12 @@ export class Logger {
     // Add console transport in development
     if (process.env.NODE_ENV !== 'production') {
       this.logger.add(new winston.transports.Console({
-        format: winston.format.combine(
-          winston.format.colorize(),
-          winston.format.simple(),
-          winston.format.printf(({ timestamp, level, message, context }) => {
-            return `${timestamp} [${context || this.context}] ${level}: ${message}`;
+        format: format.combine(
+          format.colorize(),
+          format.label({ label: this.context }),
+          format.timestamp(),
+          format.printf(({ timestamp, level, message, label }) => {
+            return `${timestamp} [${label}] ${level}: ${message}`;
           })
         )
       }));
@@ -81,5 +83,28 @@ export class Logger {
   verbose(message: string, meta?: any): void {
     this.logger.verbose(message, { context: this.context, ...meta });
   }
-}
 
+  // Step-based logging methods for agent workflows
+  stepStart(message: string, meta?: any): void {
+    this.logger.info(`🟡 STEP START: ${message}`, { context: this.context, step: 'start', ...meta });
+  }
+
+  stepSuccess(message: string, meta?: any): void {
+    this.logger.info(`✅ STEP SUCCESS: ${message}`, { context: this.context, step: 'success', ...meta });
+  }
+
+  stepFailed(message: string, error?: Error, meta?: any): void {
+    const errorInfo = error ? { 
+      message: error.message, 
+      stack: error.stack,
+      name: error.name 
+    } : {};
+    
+    this.logger.error(`❌ STEP FAILED: ${message}`, { 
+      context: this.context, 
+      step: 'failed', 
+      error: errorInfo,
+      ...meta 
+    });
+  }
+}
